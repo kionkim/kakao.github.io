@@ -1,4 +1,4 @@
-title: kakao 기술 블로그
+title: kakao 기
 email: opensource@kakaocorp.com
 description: |
   Connect Everything 새로운 연결, 새로운 세상.
@@ -7,7 +7,8 @@ baseurl: ''
 url: 'http://tech.kakao.com'
 timezone: Asia/Seoul 
 
-repository: kakao/kakao.github.io
+#repository: kakao/kakao.github.io
+repository: kionkim/kionkim.github.io
 
 permalink: /:year/:month/:day/:title/
 
