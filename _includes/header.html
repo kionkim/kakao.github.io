@@ -23,6 +23,22 @@
 <!-- Script pointing to jekyll-search.js -->
 <script src="{{site.baseurl}}/dest/jekyll-search.js" type="text/javascript"></script>
 
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    // 해당 부분은 태그 옆에 숫자를 표시해준다. 싫다면 생략.
+    TeX: {
+      equationNumbers: {
+      autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
 <script type="text/javascript">
     SimpleJekyllSearch({
         searchInput: document.getElementById('search-input'),
