@@ -9,99 +9,130 @@ tags: [openapi]
 ---
 
 
-Johnny Coder
+김기온
+
 ============
 
--------------------     ----------------------------
-1 MyAddress                        email@example.com
-MyTown 1000                          @twitter_handle
-MyCountry                           1800 my-phone-nr
--------------------     ----------------------------
-
-Education
----------
-
-2010-2014 (expected)
-:   **PhD, Computer Science**; Awesome University (MyTown)
-
-    *Thesis title: Deep Learning Approaches to the Self-Awesomeness
-     Estimation Problem*
-
-2007-2010
-:   **BSc, Computer Science and Electrical Engineering**; University of
-    HomeTown (HomeTown)
-
-    *Minor: Awesomeology*
-
-Experience
+업무경험
 ----------
 
-**Your Most Recent Work Experience:**
+** Machine Learning Cell, Intelligent Platform, SK 텔레콤
 
-Short text containing the type of work done, results obtained,
-lessons learned and other remarks. Can also include lists and
-links:
+현재 machine learning 및  deep learning을 현업에 원활히 적용하기 위한 machine learning platform을 개발하고 있습니다.
 
-* First item
+* AutoML 개발
+  - 분석가 외에 현업 담당자들도 deep leanring을 분석에 활용할 수 있도록 노력하고 있습니다.
 
-* Item with [link](http://www.example.com). Links will work both in
-  the html and pdf versions.
+* Hyperparameter optimization
+  - 산학 과제를 통해 HPO와 NAS에 대해서 공부하고 있습니다.
 
-**That Other Job You Had**
+* Deep learning 관련 기술 sensing
+  - 최근에는 VAE와 GAN 등 generative model에 관심을 가지고 공부하고 있습니다.
+  - 자연어 처리에 대해서도 관심이 많고 업무에 어떻게 적용할지 고민하고 있습니다.
+  - 팀 동료들과 함께 embedding은 업무에 훌륭하게 적용하고 있습니다.
 
-Also with a short description.
+
+** Data Insight team, Data Science Center, SK 텔레콤
+
+Data 분석가로 현업과의 communication을 통해 data 분석 결과를 business에 적용하였습니다.
+
+* 대상 고객군 타게팅
+  - 가장 기본적인 업무로 다수 경험이 있습니다.
+
+- 업무 자동화 project 진행
+  - Modeling을 통해 업무 효율화를 이끌어낸 경험이 있습니다.
+
+
+** 삼성화재 자동차 상품파트
+
+자동차 보험료 산출을 위한 거의 모든 영역에서 경험을 쌓았습니다. 보험료 신고는 거의 해본 적이 없습니다. 그러니깐, 요율 당국과 communication을 하거나 협의를 하는 요율 전문가는 아니었구요. 데이터 분석 전문가로서 역할을 했습니다. 하지만, 자동차 보험은 데이터 분석이 8할이라는 생각을 강하게 가지고 있습니다. 업무하는 동안 거의 아무도 하지 않는 보험업계에서는 아직 도입되지 않은 보험 선진국 기법들을 많이 적용해 봤습니다. 아주 오래전 일이지만, 보험개발원에 조언을 해준 적은 있습니다.
+
+* 보험료 계산 엔진 제작
+  - 타사 보험료 비교를 위한 가격 scrolling 및 타사 보험료 계산 엔진 제작
+  - 분석을 위한 다양한 삼성화재 보험료 엔진 제작
+
+* Retention 모형 제작
+  - 신규/타사 및 갱신 모형 제작
+
+* 가격 최적화
+  - 순보험료 모형과 갱신율 모형을 바탕으로 최적 요율 시나리오 비교 분석
+
+* 데이터 시각화
+  - Tableau를 이용한 데이터 시각화
+  - 지역별 summary data와 함께 모형 결과물로써 도출된 갱신율/순보험료 등 정보를 시각화
+
+* 해외 유수 보험사의 benchmark 및 협업 전담 추진
+  - Allstate, Geico, Progressive, R&SA 등 유수 보험사의 요율 관련 Best practice에 대한 benchmark를 진행했습니다.
+
+** 삼성화재 자동차 보험 혁신 TF
+
+보수적인 업계 문화 속에서 아직 도입되지 않은 요율 paradigm인 GLM을 업무에 녹이려 노력했습니다. 현재 Chubb사에서 동남아지역 일반보험에 vice president로 계신 Taikuan Ly와 함께 신요율에 대해서 많이 공부하고 배울 수 있었습니다.
+
+* 보험료 모델링
+  - GLM을 이용한 순보험 모델링
+  - 순보험료법 / 손해율법 비교 분석
+
 
 Technical Experience
 --------------------
 
-My Cool Side Project
-:   For items which don't have a clear time ordering, a definition
-    list can be used to have named items.
+Education
+---------
 
-    * These items can also contain lists, but you need to mind the
-      indentation levels in the markdown source.
-    * Second item.
+2005-2010
+:   **PhD, 통계학**; The Pennsylvania State University (University Park, PA, USA)
 
-Open Source
-:   List open source contributions here, perhaps placing emphasis on
-    the project names, for example the **Linux Kernel**, where you
-    implemented multithreading over a long weekend, or **node.js**
-    (with [link](http://nodejs.org)) which was actually totally
-    your idea...
+    *Dissertation title: Functional Data Analysis and its application to sparse longitudinal data*
 
-Programming Languages
-:   **first-lang:** Here, we have an itemization, where we only want
-    to add descriptions to the first few items, but still want to
-    mention some others together at the end. A format that works well
-    here is a description list where the first few items have their
-    first word emphasized, and the last item contains the final few
-    emphasized terms. Notice the reasonably nice page break in the pdf
-    version, which wouldn't happen if we generated the pdf via html.
+2003-2005
+:   **MA, 응용통계학**; 연세대학교 (서울, 대한민국)
 
-:   **second-lang:** Description of your experience with second-lang,
-    perhaps again including a [link] [ref], this time placing the url
-    reference elsewhere in the document to reduce clutter (see source
-    file).
+    *Minor: Awesomeology*
 
-:   **obscure-but-impressive-lang:** We both know this one's pushing
-    it.
 
-:   Basic knowledge of **C**, **x86 assembly**, **forth**, **Common Lisp**
+Publication
+----------
 
-[ref]: https://github.com/githubuser/superlongprojectname
+* Kim, K., Senturk, D., and Li, R. (2009). “The recent history functional linear models,”, Festschrift in honor of Tom Hettmansperger, WSPC edited by David Hunter, Jim Rosenberger, and Donald Richards
 
-Extra Section, Call it Whatever You Want
-----------------------------------------
+* Kim, K., Senturk, D., and Li, R. (2010). “The recent history functional linear models for sparse longitudinal data,” Statistical Planning and Inference
 
-* Human Languages:
 
-     * English (native speaker)
-     * ???
-     * This is what a nested list looks like.
+Posters
+------
 
-* Random tidbit
+* Poster presentation, The 2009 Rao Prize Conference, PA
 
-* Other sort of impressive-sounding thing you did
-* 
-* 커버 이미지 출처: [About me](http://www.shannakelly.com/about-me/)
--->
+* Poster presentation, Conference on Statistical Method for Complex Data: In Honor of Raymond Carroll, College Station, TX
+
+* Poster presentation, Nonparametric Statistics and Mixture Models: Past, Present, and Future, University Park, PA
+
+Talks
+----
+
+* Topic contributed talk, 2009 Joint Statistical Meeting, Washington D.C.
+
+* Topic contributed talk, 2008 Joint Statistical Meetings, Denver, CO
+
+Conference 참여
+----
+
+* Earnix Summit 2015, London, UK
+
+* Earnix Summit 2014, London, UK
+
+Programming 언어
+--------
+
+:   **Python:** 최근 2년 동안 가장 많이 사용하고 있는 언어입니다. Deep learning을 바탕으로 대부분의 분석을 python으로 진행하고 있습니다. 현재는 팀 내에서 협업을 통해 분석 framework를 제작하고 있습니다. 개발자들과 함께 일하는 개발과 분석을 동시에 진행하는 중간 영역에서 활동하며, 자칭 ML Developer가 되기 위해 노력하고 있습니다.
+
+:   **Java:** 약 3년간 보험료 비교 분석 엔진 제작에 주로 사용하였습니다. mybatis를 활용한 동적 query 생성하여 보험료 로직을 구현하였고, swing을 이용하여 GUI까지 구현함으로써, stand alone solution 개발 전 과정을 혼자 진행했습니다. 그래서 협업 경험은 별로 없었습니다.
+
+:   **R:** Deep learning을 공부하기 전에 주로 쓰던 분석 도구입니다. 이전 회사에 있을 때에는 데이터가 그렇게 크지 않았기 때문에, R을 이용해서 분석했습니다. PC용 R이면 충분했구요. 하지만, SK 텔레콤에서는 데이터가 너무 큰 관계로, 서버용 R만 사용했습니다. Linux 기반의 R-studio 사용 경험이 있습니다.
+
+:   기타 여러가지 연구용 언어에 대한 사용 경험과 개념을 가지고 있습니다.
+
+언어
+-----
+* 한국어가 모국어이지만
+* 영어도 가능합니다.
