@@ -16,6 +16,7 @@
     <ul id="menu" class="nav">
         <li class="{% if page.url != '/opensource/' and page.url != '/openapi/' and page.url != '/events/' %} active {% endif %}"><a href="{{ base_path }}/">블로그</a></li>
         <li class="{% if page.url == '/codes/' %} active {% endif %}"><a href="{{ base_path }}/codes/">Github</a></li>
+        <li class="{% if page.url == '/reference/' %} active {% endif %}"><a href="{{ base_path }}/reference/">논문/Git 모음</a></li>
         <li class="{% if page.url == '/about_me/' %} active {% endif %}"><a href="{{ base_path }}/about_me/">About Me</a></li>
     </ul>
 </div>
