@@ -8,15 +8,15 @@ excerpt: 저에 대해 소개합니다.
 tags: [openapi]
 ---
 
-
-김기온
-
 ============
+
+## 김기온
+
 
 업무경험
 ----------
 
-** Machine Learning Cell, Intelligent Platform, SK 텔레콤
+#### Machine Learning Cell, Intelligent Platform, SK 텔레콤
 
 현재 machine learning 및  deep learning을 현업에 원활히 적용하기 위한 machine learning platform을 개발하고 있습니다.
 
@@ -32,7 +32,7 @@ tags: [openapi]
   - 팀 동료들과 함께 embedding은 업무에 훌륭하게 적용하고 있습니다.
 
 
-** Data Insight team, Data Science Center, SK 텔레콤
+#### Data Insight team, Data Science Center, SK 텔레콤
 
 Data 분석가로 현업과의 communication을 통해 data 분석 결과를 business에 적용하였습니다.
 
@@ -43,7 +43,7 @@ Data 분석가로 현업과의 communication을 통해 data 분석 결과를 bus
   - Modeling을 통해 업무 효율화를 이끌어낸 경험이 있습니다.
 
 
-** 삼성화재 자동차 상품파트
+#### 삼성화재 자동차 상품파트
 
 자동차 보험료 산출을 위한 거의 모든 영역에서 경험을 쌓았습니다. 보험료 신고는 거의 해본 적이 없습니다. 그러니깐, 요율 당국과 communication을 하거나 협의를 하는 요율 전문가는 아니었구요. 데이터 분석 전문가로서 역할을 했습니다. 하지만, 자동차 보험은 데이터 분석이 8할이라는 생각을 강하게 가지고 있습니다. 업무하는 동안 거의 아무도 하지 않는 보험업계에서는 아직 도입되지 않은 보험 선진국 기법들을 많이 적용해 봤습니다. 아주 오래전 일이지만, 보험개발원에 조언을 해준 적은 있습니다.
 
@@ -64,7 +64,7 @@ Data 분석가로 현업과의 communication을 통해 data 분석 결과를 bus
 * 해외 유수 보험사의 benchmark 및 협업 전담 추진
   - Allstate, Geico, Progressive, R&SA 등 유수 보험사의 요율 관련 Best practice에 대한 benchmark를 진행했습니다.
 
-** 삼성화재 자동차 보험 혁신 TF
+#### 삼성화재 자동차 보험 혁신 TF
 
 보수적인 업계 문화 속에서 아직 도입되지 않은 요율 paradigm인 GLM을 업무에 녹이려 노력했습니다. 현재 Chubb사에서 동남아지역 일반보험에 vice president로 계신 Taikuan Ly와 함께 신요율에 대해서 많이 공부하고 배울 수 있었습니다.
 
@@ -80,14 +80,15 @@ Education
 ---------
 
 2005-2010
-:   **PhD, 통계학**; The Pennsylvania State University (University Park, PA, USA)
 
+:   **PhD, 통계학**; The Pennsylvania State University (University Park, PA, USA)
     *Dissertation title: Functional Data Analysis and its application to sparse longitudinal data*
 
 2003-2005
-:   **MA, 응용통계학**; 연세대학교 (서울, 대한민국)
+:   **석사, 응용통계학**; 연세대학교 (서울, 대한민국)
 
-    *Minor: Awesomeology*
+1996-2003
+:   **학사, 경영학 / 응용통계학**; 연세대학교 (서울, 대한민국)
 
 
 Publication
