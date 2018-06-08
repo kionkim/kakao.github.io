@@ -5,10 +5,8 @@ image: /files/covers/about_me.png
 permalink: /about_me/
 sitemap: yes
 excerpt: 저에 대해 소개합니다.
-tags: [openapi]
+tags: [about_me]
 ---
-
-============
 
 ## 김기온
 
