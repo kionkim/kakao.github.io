@@ -7,7 +7,6 @@ baseurl: ''
 url: 'http://kionkim.github.io'
 timezone: Asia/Seoul
 
-#repository: kakao/kakao.github.io
 repository: kionkim/kionkim.github.io
 
 permalink: /:year/:month/:day/:title/
