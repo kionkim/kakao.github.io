@@ -1,11 +1,11 @@
-title: kakao 기
-email: opensource@kakaocorp.com
+title: Statistician's Deeplearning
+email: kion.kim@gmail.com
 description: |
-  Connect Everything 새로운 연결, 새로운 세상.
-  연결의 혁신으로 세상은 더욱 가깝고 새로워진다고 카카오는 믿습니다.
+  급변하는 분석 패러다임의 변화의 물결을 온몸으로 받아내는 통계학자입니다.
+  통계와 머신러닝의 차이는 무엇일까요?
 baseurl: ''
-url: 'http://tech.kakao.com'
-timezone: Asia/Seoul 
+url: 'http://kionkim.github.io'
+timezone: Asia/Seoul
 
 #repository: kakao/kakao.github.io
 repository: kionkim/kionkim.github.io
@@ -51,8 +51,8 @@ exclude: [README.md, Gemfile, Gemfile.lock]
 keep_files: [assets, files]
 github: [metadata]
 # iolo's custom
-author: opensource@kakaocorp.com
-image: '/assets/images/default_blog_cover.jpg'
+author: kionkim@gmail.com
+image: '/assets/images/default_blog_cover.png'
 asset_url: /assets
 #asset_url: //meta-kage.kakaocdn.net/dn/osa/blog/assets
 #asset_url: //t1.daumcdn.net/osa/blog/assets
