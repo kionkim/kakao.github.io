@@ -1,7 +1,7 @@
 ---
 layout: post
 title: '컨볼루션 연산에 대해'
-image: /files/covers/about_me.png
+image: /files/covers/default_post_cover.png
 author: kion.kim
 date: 2018-06-08 17:00
 tags: [deeplearning, CNN]
