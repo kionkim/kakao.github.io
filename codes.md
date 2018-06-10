@@ -2,7 +2,7 @@
 layout: page
 title: Code 창고입니다.
 image: /files/covers/github_cover.png
-permalink: /source_code/
+permalink: /codes/
 sitemap: yes
 excerpt: 여러가지 구현체들을 모아두었습니다.
 tags: [opensource,s2graph,mrte,hbase-tools,hbase-region-inspector,adt,daum-editor]
