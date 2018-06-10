@@ -7,7 +7,7 @@ sitemap: yes
 excerpt: 기술 관련 논문이나 링크를 저장합니다.
 tags: [reference, github, paper, blogs]
 ---
-<a id="forkme" href="https://github.com/kionkim"></a>
+<a id="refence" href="https://github.com/kionkim"></a>
 
 ## Deep Learning
 
