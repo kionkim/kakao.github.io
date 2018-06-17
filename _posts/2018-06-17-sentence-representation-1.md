@@ -12,6 +12,9 @@ Attention mechanism은 자연어 처리 분야와 그 자연어 처리로부터 
 
 앞으로 몇개의 블로그를 더 쓸 예정인데, 여러가지 sentence representation으로 sentiment analysis를 하는 과정을 정리해 보려고 합니다. NLP 관련해서 첫 블로그인만큼, NLP에서 가장 기본이 되는 개념인 token representation과 sentence representation의 일반적인 이야기를 먼저 해보려 합니다. 그뒤에는 제일 간단한 형태의 sentence representation을 통해서 sentiment analysis를 진행하는 방법에 대해서 적어보겠습니다.
 
+> NOTE: 아래의 분석 과정은 [Text_Classification](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CBOW_representation.ipynb)에 자세하게 나타나 있습니다. 참고하시기 바랍니다.
+
+
 ## Sentence represion의 일반론
 
 먼저 문장은 컴퓨터가 이해할 수 있는 숫자로 바꾸어야 분석을 진행할 수 있을 것입니다. 문장을 숫자로 바꾸는 단계를 두가지로 나눠 볼 수 있는데요, 문장의 요소 (단어가 될 수도 있고, 문자가 될 수도 있습니다. 이 단위를 token이라고 이야기 합니다.)를 숫자로 표현하는 단계(token representation)와 숫자화 된 단어들을 요약해서 문장을 숫자로 표현하는 단계(sentence representation)으로 나눠볼 수 있겠습니다. Token을 숫자로 표현하는 가장 직관적인 방법은 token을 one-hot 벡터로 나타내는 것입니다. 물론, 단어를 잘 표현하기 위해서 word2vec 등의 embedding을 사용하기도 합니다. 하지만 오늘 글은 sentence representation이 그 목표이므로, 다루지 않겠습니다. 위에서 언급한 것과 같이 token이라는 개념은 다양하게 정의가 될 수 있습니다. 가장 일반적인 token의 단위는 단어(word)와 문자(character)입니다.  
@@ -170,6 +173,8 @@ xgb = XGBClassifier()
 xgb.fit(tr_x, tr_y)
 ~~~
 
+다음은 추정된 모형에 validation set을 대입해서 실제 예측치를 얻고 그 예측치에 대한 accuracy를 구하는 과정입니다.
+
 ~~~
 y_pred_xgb = xgb.predict(va_x)
 pred_xgb = [round(val) for val in y_pred_xgb]
@@ -187,6 +192,11 @@ from mxnet import gluon, autograd, nd
 from mxnet.gluon import nn
 context = mx.gpu()
 ~~~
+
+tensorflow에서는 GPU와 CPU를 오가는 것이 그렇게 user-friendly 정의가 되어있지 않았습니다. 어떤 장비를 사용하는지에 따라 graph가 꼬이기도 하고, 뭔가 말로 표현하기는 좀 어렵지만, 굉장히 사람을 신경쓰이게 하는 면이 있었습니다. 하지만, gluon에서는 context를 지정하는 것으로 어떤 resource를 이용하는가에 대한 고민은 크게 하지 않아도 됩니다. GPU를 사용하고 싶으면 mx.gpu(0)를 CPU를 사용하고 싶녀면 mx.cpu(0)을 지정하면 됩니다. 
+
+Gluon의 기본적인 programming style은 pytorch를 따릅니다. 다음과 같이 `nn.Block` class를 상속 받아서 구현하고자 하는 network를 정의하는 형태인데요. name_scope 안에 network에서 사용할 weight값이 들어 있는 layer들을 정의합니다. 그리고 실제 feed-forward 계산은 `forward` method에서 이루어집니다. Class 내에서 network를 쌓아가는 모습은 pytorch의 형태와 비슷하기는 하지만, 이를 Keras의 형태로 network를 정의할 수도 있습니다. 아마도 앞으로 nn.Sequence를 상속받은 class를 통해 network를 정의하는 예제도 따라 나올 것 같습니다.
+
 
 ~~~
 class MLP(nn.Block):
@@ -208,44 +218,93 @@ class MLP(nn.Block):
         return x
 ~~~
 
+위에서는 1개의 dense layer를 이지고 있는 간단한 network를 정의했습니다. Batch-normalization을 적용했고, RELU activation 함수를 사용했죠. 그 결과 나오는 마지막 output은 2개의 node를 가지게 됩니다. softmax를 사용해서 이 두개의 node값을 긍정과 부정의 확률값으로 표현하게 될 것입니다. 다음과 같이 실제로 class를 객체화시킨 후에 mlp라는 객체가 가지고 있는 모수들, 다시 말하면 weight값,들을 초기화하는 단계를 거칩니다. Xavier initializer를 사용합니다. 물론, GPU를 사용하기 위해 context지지정해 줍니다. 
+
+~~~
+mlp = MLP(input_dim = MAX_FEATURES, emb_dim = 50)
+mlp.collect_params().initialize(mx.init.Xavier(), ctx = context)
+~~~
 
 
+학습을 시키기 위해서는 loss 함수와 optimizer를 정해야 하는데요. gluon에서는 간단하게 다음과 같이 정의할 수 있습니다.
+
+~~~
+loss = gluon.loss.SoftmaxCELoss()
+trainer = gluon.Trainer(mlp.collect_params(), 'adam', {'learning_rate': 1e-3})
+~~~
+
+SoftmaxCELoss는 Softmax를 적용한 후 Cross Entropy Loss를 적용하라는 의미입니다. 여기에서 softmax가 적용될 것이기 때문에 위에서 network를 정의할 때에는 최종 output layer의 마지막에는 따로 activation 함수를 지정하지 않았습니다. trainer에는 학습을 해야할 모수와 optimizer의 종류, 그리고 optimize에 필요한 hyperparameter를 넣어주어야 합니다. 이제 학습을 하기 위해 모형 관련된 내용들은 모두 정의가 된 상태입니다. 요약하면, DNN을 수행하기 위해서는 다음의 4가지 정도를 꼭 정해주어야 한다는 거죠.
+
+* Network architecture
+* Optimizer
+* Loss Function
+* Hyper parameter
+
+Data를 network에 feeding할 때, deep learning에서는 mini batch를 사용하게 됩니다. 큰 데이터를 메모리에 담을 수 없어 나오게 된 현실적인 고려인데, 이렇게 데이터의 일부분만으로 모수를 업데이트 해도 평균적으로 잘 된다는 게 알려진 사실이고, 그래서 이렇게 임의로 뽑은 일부의 데이터만 활용해서 모수를 갱신하는 방법을 SGD 방법이라고 하죠. SGD의 여러가지 변종들이 Adam이니 Adadelta니 하는 optimizer입니다. 따라서 mini-batch의 크기만큼 데이터를 계속 잘라서 network에 넣어주어야 하는데요, 이런 작업들을 쉽게 할 수 있도록 gluon에서는 NDArrayIterator라는 class를 제공합니다. 다음과 같이 사용합니다.
+
+~~~
+train_data = mx.io.NDArrayIter(data=[tr_x, tr_y], batch_size=batch_size, shuffle = False)
+valid_data = mx.io.NDArrayIter(data=[va_x, va_y], batch_size=batch_size, shuffle = False)
+~~~
+
+이렇게 하면 iterator로 정의한 것이므로, 메모리에 대한 걱정도 사라지게 됩니다. 
+
+이제 모형 관련된 준비 사항 및 데이터 관련 준비 사항도 모두 끝이 났습니다. 이제 이런 설정들을 바탕으로 실제 학습을 진행하면 됩니다. 다음은 실제 코드입니다.
+
+~~~
+for epoch in tqdm_notebook(range(n_epoch), desc = 'epoch'):
+    ## Training
+    train_data.reset()
+    n_obs = 0
+    _total_los = 0
+    pred = []
+    label = []
+    for i, batch in enumerate(train_data):
+        _dat = batch.data[0].as_in_context(context)
+        _label = batch.data[1].as_in_context(context)
+        with autograd.record():
+            _out = mlp(_dat)
+            _los = nd.sum(loss(_out, _label)) # 배치의 크기만큼의 loss가 나옴
+            _los.backward()
+        trainer.step(_dat.shape[0])
+        n_obs += _dat.shape[0]
+        #print(n_obs)
+        _total_los += nd.sum(_los).asnumpy()
+        # Epoch loss를 구하기 위해서 결과물을 계속 쌓음
+        pred.extend(nd.softmax(_out)[:,1].asnumpy()) # 두번째 컬럼의 확률이 예측 확률
+        label.extend(_label.asnumpy())
+    #print(pred)
+    #print([round(p) for p in pred]) # 기본이 float임
+    #print(label)
+    #print('**** ' + str(n_obs))
+    #print(label[:10])
+    #print(pred[:10])
+    #print([round(p) for p in pred][:10])
+    tr_acc = accuracy_score(label, [round(p) for p in pred])
+    tr_loss = _total_los/n_obs
+    
+    ### Evaluate training
+    valid_data.reset()
+    n_obs = 0
+    _total_los = 0
+    pred = []
+    label = []
+    for i, batch in enumerate(valid_data):
+        _dat = batch.data[0].as_in_context(context)
+        _label = batch.data[1].as_in_context(context)
+        _out = mlp(_dat)
+        _pred_score = nd.softmax(_out)
+        n_obs += _dat.shape[0]
+        _total_los += nd.sum(loss(_out, _label))
+        pred.extend(nd.softmax(_out)[:,1].asnumpy())
+        label.extend(_label.asnumpy())
+    va_acc = accuracy_score(label, [round(p) for p in pred])
+    va_loss = _total_los/n_obs
+    tqdm.write('Epoch {}: tr_loss = {}, tr_acc= {}, va_loss = {}, va_acc= {}'.format(epoch, tr_loss, tr_acc, va_loss, va_acc))
+~~~
+
+## 마치며
+
+단순히 단어의 one-hot representation만으로도 성능이 높은 모형을 구축할 수 있었습니다. 이 데이터셋이 가장 entry level의 쉬운 데이터셋이기도 합니다만, 사실 text classification에서는 이정도의 technique로도 충분히 좋은 성능을 얻을 수 있다고 합니다. 다음 글에서는 CNN을 이용한 sentence representation을 해보도록 하죠.
  
 
-
-word_freq라는 변수에 읽어온 문장
-그다음 생각할 수 있는 것이 문장에 존재하는 모든 단어들에 대해 그 단어와의 관계를 하나의 벡터로 담는 것입니다. 이것을 문장 표현(sentence representation)을 위한 Relation Netowrk이라고 합니다.  다음과 같이  두 단어간의 관계를 표현 합니다.
-
-
-$$f(x_i, x_j) = W\phi(U_{left}e_i +  U_{right}e_j )$$
-
-여기서 $U$와 $W$는 학습해야 할 대상입니다. $\phi$는 non-linear transformation입니다. 모수들이 확정이 되고 나면, sentence representation은 다음과 같이 할 수 있습니다.
-
-$$RN(S) = \frac 1 {2 N(N-1)}\sum_{i=1}^{T-1}\sum_{j = i +1}^T f(x_i, x_j)$$
-
-그 다음으로 사용할 수 있는 방법은 CNN을 들 수 있습니다. $t$번 째 단어를 $k$-gram을 나타낼 수 있는 커널 $W_tau$를 적용시켜서 다음과 같이 $h_t$를 정의할 수 있습니다.
-
-$$h_t = \phi\left(\sum_{i = - k/2}^{k/2} W_\tau e_{t+\tau}\right)$$
-
-이렇게 정의된 $\h_t$를 모아서 $h = (h_1, \ldots, h_T)$로 표현하고 이 표현을 sentence representation으로 이용할 수 있습니다. 만약 여러개의 1D CNN을 사용한다면, token을 종합해서 구절을 표현하고, 구절을 압축해서 문장을 표현하는 식의 일반적인 문장에 대한 직관을 표현할 수 있다는 장점이 있습니다. 이미 구현되어 있는 Convolution layer들을 사용함으로써 손쉽게 구현할 수 있습니다. 이런 CNN을 sentence representation에 활용하는 기법들은 계속 발전하고 있습니다.
-
-* Multi width convolutional layers [Kim, 2014; Lee et al., 2017]
-* Dilated Convolutioal layers [
-$$ h_t = f(x_t, x_1) + \cdots + f(x_t, x_{t-1})  + f(x_t, x_{t+1}) + \cdots + f(x_t, x_T)$$
-
-위에서 $f$는 단어 간의 관계를 추출하는 함수라고 볼 수 있습니다. 위의 식을 설명하면, $t$ 번째 르어의 예측값은 해당 단어와 그 이외의 단어들의 관계를 모두 고려한 값이라고 할 수 있겠습니다. 반면에 CNN의 경우는 해당 단어의 주변 단어 정보만을 활용합니다.
-
-$$ h_t = f(x_t, x_{t-k}) + \cdots + f(x_t, x_{t-1})  + f(x_t, x_{t+1}) + \cdots + f(x_t, x_{t+ k})$$
-
-이 두가지 개념의 중간이 바로 attention mechanism이라고 할 수 있겠습니다. Recurrent network류의 모형들이 긴 문장을 번역하지 못하는 이유 중의 하나로 많이 드는 것이 모든 단어의 정보를 하나의 hidden vector로 압축을 하려하기 때문이라고 합니다. 단어들 간의 복잡한 관계를 하나의 vector로 표현한다는 것은 얼핏 생각해봐도 무리라는 생각이 듭니다.
-
-그래서 attention mechanism은 다음과 같은 형태를 띕니다.
-
-
-$$h_t = \sum_{t' = 1}^T \alpha(x_t, x_{t'}) f(x_t, x_{t'})$$ 
-
-위에서 $alpha(\cdot,\cdot)$은 해당 위치에 있는 단어의 관계를 얼마나 반영할지를 나타내는 정도입니다. 만약에 지금 5번째 단어를 예측하는 데 있어 2번째 단어의 중요도는 얼마나 되는지를 측정한다고 볼 수 있겠습니다. $\alpha(\cdot, \cdot)$은 0과 1사이의 값을 가지며, 모두 합하면 1이 됩니다. 일종의 가중치라고 보시면 되겠습니다.
-
-
-
-$$P(y| y_{-N}, y_{-N + 1}, \ldots, y_{-1})$$
