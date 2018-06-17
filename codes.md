@@ -11,6 +11,8 @@ tags: [opensource,s2graph,mrte,hbase-tools,hbase-region-inspector,adt,daum-edito
 
 ## Deep Learning
 
+* [Text Classification - BoW](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CBOW_representation.ipynb)
+
 * [Variational Autoencoder](http://210.121.159.217:9090/kionkim/kyungbpook-lecture/blob/master/notebooks/VAE_using_MLP.ipynb)
 
 * [DCGAN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/GAN/notebooks/DCGAN.ipynb)
