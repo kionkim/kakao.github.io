@@ -2,8 +2,8 @@
 layout: post
 title: 'BoW를 이용한 text-classification'
 author: kion.kim
-date: 2018-06-01 17:00
-tags: [deeplearning, statistics, generative-model]
+date: 2018-06-17 17:00
+tags: [deeplearning, statistics, nlp models, text classification, BoW, machine learning]
 ---
 
 ## 시작하며
@@ -32,6 +32,9 @@ Attention mechanism은 자연어 처리 분야와 그 자연어 처리로부터 
 
 ## BoW를 이용한 sentiment analysis
 
+
+### Sentence representation
+
 Sentiment analysis는 문장을 보고 그 문장에 나타나 있는 감정이 어떤 것인지를 예측하는 문제로 text classification의 가장 대표적인 문제입니다. 여기에서는 좀 식상하기는 하지만, umich-sentiment-train.txt로 제공되는 영화 평점 데이터에서 부정/긍정 대답을 구분하는 문제에 적용해 보겠습니다. 참고로 말씀드리자면, 워낙 쉬운 문제라 거의 1의 정확도를 보입니다. 앞으로 조금씩 더 어려운 데이터셋에 방법들을 적용해 가는 과정을 보여주는 것도 이 블로그의 목표이기도 합니다.
 
 먼저 BoW에 대해서 이야기 해보겠습니다.
@@ -41,7 +44,7 @@ $$\frac 1 T \sum_{t=1}^T e_t$$
 
 token representation을 가지고 있기만 하면 한방에 문장의 표현을 얻을 수 있습니다.
 
-
+Python에서는 어떤 형태로 구현이 될까요? 먼저 다음의 module을 불러옵니다.
 
 ~~~
 import os
@@ -49,9 +52,168 @@ import pandas as pd
 import numpy as np
 import nltk
 import collections
-from sklearn.preprocessing import normalize
 ~~~
 
+네번째 줄에 있는 nltk 모듈은 가장 많이 사용되는 nlp를 위한 전처리 모듈로서 이 블로그에서는 문장을 단어 단위로 tokenize하기 위해서 사용됩니다.
+다섯번째 줄에 있는 collections는 보다 쉽게 count를 하기 위해 사용하는 module입니다. 기본적으로 python에서 제공해주는 collection 기능보다 더욱 많은 기능을 제공합니다. 이제 본격적으로 데이터를 불러오도록 하겠습니다. 
+
+~~~
+word_freq = collections.Counter()
+max_len = 0
+num_rec = 0
+
+with open('../data/umich-sentiment-train.txt', 'rb') as f:
+    for line in f:
+        label, sentence = line.decode('utf8').strip().split('\t')
+        words = nltk.word_tokenize(sentence.lower())
+        if len(words) > max_len:
+            max_len = len(words)
+        for word in words:
+            word_freq[word] += 1
+        num_rec += 1
+~~~
+
+Collections에 있는 Counter class는  Container에 동일한 값의 자료가 몇개 있는지를 확인하는 객체입니다. 데이터가 저장되어 있는 file을 열고 개별 라인을 읽어오면서 label과 sentence를 분리합니다. 이렇게 얻어진 각각의 데이터에서 문장의 최대 길이와 전체 데이터셋에 등장하는 단어의 갯수를 셉니다. 
+
+이 분석에서는 최대 2000개의 단어만 고려할 것입니다. Word_freq에 저장되어 있는 정보를 활용해서 데이터에 가장 많이 등장하는 2000개 단요를 사용할 것입니다. 그런 다음, 한 문장을 구성하는 단어의 개수는 40개로 제한합니다. 만약 어떤 문장이 40개 이상의 단어로 구성이 되어 있으면, 최초 40개만 분석에 활용하고 그보다 짧은 문장이면 0을 채워 넣어서 40개 단어를 맞춥니다. 만약 2000개 안에 속하지 않는 단어를 만나면 1을 대입해서, 모르는 단어(Unknown)임을 표시합니다.
+
+~~~
+MAX_FEATURES = 2000
+MAX_SENTENCE_LENGTH = 40
+# most_common output -> list
+word2idx = {x[0]: i+2 for i, x in enumerate(word_freq.most_common(MAX_FEATURES - 2))}
+word2idx ['PAD'] = 0
+word2idx['UNK'] = 1
+~~~
+
+{단어: 인덱스} 자료를 바탕으로 {인덱스: 단어} 자료도 만들어둡니다. 숫자로 표현된 자료를 원래 자연어로 돌리는데 사용하는 등 나중에 여러모로 활용할 수 있습니다.
+
+~~~
+idx2word= {i:v for v, i in word2idx.items()}
+vocab_size = len(word2idx)
+~~~
+
+다음 코드에서는 위에서 정의된 유효한 단어, 한 문장을 이루는 단어의 개수, 유효하지 않은 단어의 처리 방법 등을 바탕으로 실제 데이터를 불러옵니다. 숫자화된 데이터는 `x`와 `y`에 저장을 하고 원래 문장 데이터는 `origin_txt`라는 변수에 저장이 됩니다.    
+
+~~~
+y = []
+x = []
+origin_txt = []
+with open('../data/umich-sentiment-train.txt', 'rb') as f:
+    for line in f:
+        _label, _sentence = line.decode('utf8').strip().split('\t')
+        origin_txt.append(_sentence)
+        y.append(int(_label))
+        words = nltk.word_tokenize(_sentence.lower())
+        _seq = []
+        for word in words:
+            if word in word2idx.keys():
+                _seq.append(word2idx[word])
+            else:
+                _seq.append(word2idx['UNK'])
+        if len(_seq) < MAX_SENTENCE_LENGTH:
+            _seq.extend([0] * ((MAX_SENTENCE_LENGTH) - len(_seq)))
+        else:
+            _seq = _seq[:MAX_SENTENCE_LENGTH]
+        x.append(_seq)
+~~~
+
+실제 데이터에 부정과 긍정의 평가가 어떤 빈도로 나타나는지 보면, 부정이 3091개 긍정이 3995개입니다.
+
+~~~
+pd.DataFrame(y, columns = ['yn']).reset_index().groupby('yn').count().reset_index()
+~~~
+
+이렇게 얻어진 단어의 index 벡터를 one-hot 벡터로 바꾸기 위해서 다음과 같은 함수를 정의합니다.
+
+~~~
+def one_hot(x, vocab_size):
+    res = np.zeros(shape = (vocab_size))
+    res[x] = 1
+    return res
+~~~
+
+위에 정의된 함수를 바탕으로 다음을 실행하면, 이제 행의 갯수가 2000이고 열의 개수가 40인 one-hot 벡터로 구성된  행렬이 문장의 개수만큼 만들어집니다.
+
+~~~
+x_1 = np.array([np.sum(np.array([one_hot(word, MAX_FEATURES) for word in example]), axis = 0) for example in x])
+~~~
+
+머신러닝에서 가장 중요한 개념 중의 하나는 bia-variance trade-off입니다. 이를 잘 극복하기 위해서 사용하는 방법이 데이터를 training set과 validation set으로 나누고, 학습은 training set에서 시키고, 학습된 결과가 일반화될 수 있는지를 가늠하기 위해서 validation set에서 학습 결과를 평가합니다. 기존의 통계적인 방법론에서도 일반화를 고려하기 위해서요사용되던 개념이었지만, 머신러닝에서는 훨씬 더 그 중요도가 높아졌는데요. 통계적인 모형은 모형이 단순하여, 모형의 표현력이 떨어지는만큼, training set만 잘 맞추게 되는 over-fitting 문제가 크지 않은 반면, 머신러닝 모형은 over-fitting 문제가 훨씬 심합니다. 그래서 training set과 validation set을 나누는 것, 그리고 더 나아가서는 test set까지, 이렇게 3개의 데이터셋으로 나누는 것은 아주 중요한 과정입니다.
+
+다음은 지금까지 처리된 데이터를 training set과 validation set으로 나누는 작업입니다.
+
+~~~
+tr_idx = np.random.choice(range(x_1.shape[0]), int(x_1.shape[0] * .8))
+va_idx = [x for x in range(x_1.shape[0]) if x not in tr_idx]
+
+tr_x = x_1[tr_idx, :]
+tr_y = [y[i] for i in tr_idx]
+va_x = x_1[va_idx, :]
+va_y = [y[i] for i in va_idx]
+~~~
+
+여기까지 진행하면 classification을 위한 데이터는 모두 준비가 되었습니다. 이제 classifier로 분류 문제를 풀어볼 차례입니다.
+
+### Classification
+
+몇가지 classifier를 적용해 보겠습니다. 먼저 xgboost를 적용하기 위해서는 다음의 library들이 필요하네요.
+
+~~~
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
+~~~
+
+마지막 줄은 성능을 평가하기 위한 준비작업으로 accuracy score를 구하기 위해 필요한 모듈입니다. xgboost 모형을 학습하기 위한 코드는 아주아주 간단합니다. 다음과 같이 클래서 선언 후, fit method를 호출하면 끝입니다. 물론 다양한 모수가 있기는 하지만, 여기에서는 default로 갑니다. 아주 잘 나옵니다.
+~~~
+xgb = XGBClassifier()
+xgb.fit(tr_x, tr_y)
+~~~
+
+~~~
+y_pred_xgb = xgb.predict(va_x)
+pred_xgb = [round(val) for val in y_pred_xgb]
+
+accuracy_xgb = accuracy_score(va_y, pred_xgb)
+print('Accuracy: %.2f%%'%(accuracy_xgb * 100.0))
+~~~
+위의 결과를 돌려보면,  validation set의 accuracy가 0.98에 육박함을 알 수 있습니다. 그러니깐.. 대책없이 쉬운 문제라고 볼 밖에요.
+
+이제 비슷한 scheme으로 DNN을 적용해 보겠습니다. 여러가지 많이 사용되는 framework 중에 후발주자로서 가장 늦게 시작하기는 하였지만, 늦게 출발한 만큼 기존에 활발하게 사용되고 있는 deep learning framework인 tensoflow, pytorch, keras의 장점만을 모아서 만들어 놓은 mxnet이라는 framework이 있습니다. 그리고 mxnet을 보다 쉽게 사용하기 위해 mxnet을 wrapping한 gluon이라는 framework는 쉽기도 하고 유연하기도 해야 하는 deep learning framework의 요건을 모두 만족시키는 framework로 생각됩니다. Keras는 쉽기는 하나 점점 복잡해지는 deep learning network을 표현하기에는 좀 부족해 보이는 반면, gluon은 keras만큼 쉬우면서도 유연한 tool이라는 게 개인적인 생각입니다. mxnet과 gluon을 사용하기 위해서는 다음과 같이 필수 module을 import합니다.
+
+~~~
+import mxnet as mx
+from mxnet import gluon, autograd, nd
+from mxnet.gluon import nn
+context = mx.gpu()
+~~~
+
+~~~
+class MLP(nn.Block):
+    def __init__(self, input_dim, emb_dim, **kwargs):
+        super(MLP, self).__init__(**kwargs)
+        with self.name_scope():
+            self.embed = nn.Embedding(input_dim = input_dim, output_dim = emb_dim)
+            self.dense1 = nn.Dense(64)
+            #self.dense2 = nn.Dense(32, activation = 'relu')
+            self.bn = nn.BatchNorm()
+            self.dense2 = nn.Dense(2)
+            
+    def forward(self, x):
+        x = self.embed(x)
+        x = self.dense1(x)
+        x = self.bn(x)
+        x = nd.relu(x)
+        x = self.dense2(x)
+        return x
+~~~
+
+
+
+ 
+
+
+word_freq라는 변수에 읽어온 문장
 그다음 생각할 수 있는 것이 문장에 존재하는 모든 단어들에 대해 그 단어와의 관계를 하나의 벡터로 담는 것입니다. 이것을 문장 표현(sentence representation)을 위한 Relation Netowrk이라고 합니다.  다음과 같이  두 단어간의 관계를 표현 합니다.
 
 
