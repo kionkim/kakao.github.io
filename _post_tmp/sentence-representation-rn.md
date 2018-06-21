@@ -2,10 +2,9 @@
 layout: post
 title: 'Sentence representation - Relational Network'
 author: kion.kim
-date: 2018-0x-xx 17:00
+date: 2018-06-21 17:00
 tags: [deeplearning, nlp, sentence representation, relation network, skip-gram]
 ---
-
 
 ## 시작하며
 
