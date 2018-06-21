@@ -6,7 +6,7 @@ date: 2018-0x-xx 17:00
 tags: [deeplearning, self-attention, nlp, sentence representation]
 ---
 
-
+Attention
 다음으로 사용할 수 있는 방법은 CNN을 들 수 있습니다. $t$번 째 단어를 $k$-gram을 나타낼 수 있는 커널 $W_tau$를 적용시켜서 다음과 같이 $h_t$를 정의할 수 있습니다.
 
 $$h_t = \phi\left(\sum_{i = - k/2}^{k/2} W_\tau e_{t+\tau}\right)$$

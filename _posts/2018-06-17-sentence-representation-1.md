@@ -8,22 +8,45 @@ tags: [deeplearning, statistics, nlp models, text classification, BoW, machine l
 
 ## 시작하며
 
-Attention mechanism은 자연어 처리 분야와 그 자연어 처리로부터 파생되는 수많은 영역에서 가장 활발하게 사용되고 있는 최근 2년간 발견된 architecture 중에서 가장 중요한 발견으로 여겨지고 있습니다. 어제 조경현 교수님 수업을 듣고 나니 attention mechanism의 사용은 이제 선택이 아니라 필수라는 생각이 들더군요. 언제나 느끼는 바이지만, 깔끔하게 정리된 수업을 듣다가 보니, 피상적으로 이해한다고 생각했던 것들은 십중팔구 이해했던 것이 아니었습니다. 그래서 또 저만의 flow로 다시 한번 구성해 보았습니다.
+Text classification은 주어진 NLP에서 가장 쉽고 기본적인 task에 해당합니다. 문장에서 단어들의 pattern을 찾아 그 문장이 어느 범주에 속하는 것이 가장 기본적인 접근 방법이라고 한다면, 문장의 정보를 이해해서 문장을 분류해 낼 수 있다면 더욱 좋은 결과를 낼 수 있을 것입니다. 그 과정이 자연어 처리가 발전하는 과정일텐데요. 이번 블로그 시리즈에서는 아주 빠른 속도로 발전해 가는 자연어 처리 기법들을 적어보려고 합니다. 다양한 형태와 기법의 text classification부터 시작해서 결국에는 Neural Machine Tranlation(NMT)의 기법까지 다루어 보는 것이 목표입니다.
 
-앞으로 몇개의 블로그를 더 쓸 예정인데, 여러가지 sentence representation으로 sentiment analysis를 하는 과정을 정리해 보려고 합니다. NLP 관련해서 첫 블로그인만큼, NLP에서 가장 기본이 되는 개념인 token representation과 sentence representation의 일반적인 이야기를 먼저 해보려 합니다. 그뒤에는 제일 간단한 형태의 sentence representation을 통해서 sentiment analysis를 진행하는 방법에 대해서 적어보겠습니다.
+이 블로그는 6월 말에 있었던 조경현 교수님의 connect 재단 초청 강연을 보고 이제는 스스로 정리를 해야될 때가 되었다 싶어 쓰기 시작했습니다. 언제나 느끼는 바이지만, 깔끔하게 정리된 수업을 듣다가 보니, 피상적으로 이해한다고 생각했던 것들은 십중팔구 이해했던 것이 아니었습니다. 그래서 또 저만의 flow로 다시 한번 구성해 보았습니다.
+
+이 글에서는 가장 기본적인 Back of Word(BoW)를 이용한 text classification에 대해서 이야기 해 보겠습니다.
+
+## Attention mechanism을 향해
+
+이 글에서 소개해 드릴 BoW를 이용한 text classification은 문장을 분류함에 있어서 문장을 이해하여 해당 카테고리를 찾아간다고 볼 수 는 없습니다. 단순히 문장에 속해 있는 token의 패턴을 통해서 분류를 하는 형태입니다. 아주 초보적인 수준의 분류 기법입니다. 하지만, deep learning 기법들이 발달하면서 단어의 단순한 출현 빈도나 패턴 보다는 좀더 문장의 정보를 이해하기 시작했습니다. NLP에서 가장 먼저 각광받은 신경망이 Recurrent Neural Network(RNN)이었습니다. Convolutional Neural Network(CNN)은 이미지 처리에서 큰 활약을 하고 있었는데요. 그림의 지역적인 특성을 필터링하는 데 사용했던 Convolution 기법을 문장의 지역적인 특성과 문맥을 파악하는데 활용하기 시작했습니다. 최근에는 CNN을 활용한 처리 기법도 많이 나오는 상태구요. 하지만 정보를 어떤 형태로 축약하는지는 그렇게 알기 쉽지 않았습니다. 그리고 아주 긴 문장에 대한 처리는 여전히 문제였습니다. 이런 상황에서 최근에 아주 주목받고 있는 것이 attention mechanism입니다.
+
+Attention mechanism은 자연어 처리 분야와 그 자연어 처리로부터 파생되는 수많은 영역에서 가장 활발하게 사용되고 있는 architecture로서 빠른 속도로 많은 모형에 적용되고 있습니다. 이제 모형의 성능 관점은 물론 해석 관점에서도 아주 중요한 요소로 여겨지고 있습니다. 특히 어제 조경현 교수님 수업을 듣고 나니 attention mechanism의 사용은 이제 선택이 아니라 필수라는 생각이 들더군요.
+
+NLP 관련해서 첫 블로그인만큼, NLP에서 가장 기본이 되는 개념인 token representation과 sentence representation의 일반적인 이야기를 먼저 정리한 후에, 오늘 이야기할 BoW를 이용한 text classification을 진행해 보도록 하겠습니다.
 
 > NOTE: 아래의 분석 과정은 [Text_Classification](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CBOW_representation.ipynb)에 자세하게 나타나 있습니다. 참고하시기 바랍니다.
 
 
-## Sentence represion의 일반론
+## Sentence representation의 일반론
 
-먼저 문장은 컴퓨터가 이해할 수 있는 숫자로 바꾸어야 분석을 진행할 수 있을 것입니다. 문장을 숫자로 바꾸는 단계를 두가지로 나눠 볼 수 있는데요, 문장의 요소 (단어가 될 수도 있고, 문자가 될 수도 있습니다. 이 단위를 token이라고 이야기 합니다.)를 숫자로 표현하는 단계(token representation)와 숫자화 된 단어들을 요약해서 문장을 숫자로 표현하는 단계(sentence representation)으로 나눠볼 수 있겠습니다. Token을 숫자로 표현하는 가장 직관적인 방법은 token을 one-hot 벡터로 나타내는 것입니다. 물론, 단어를 잘 표현하기 위해서 word2vec 등의 embedding을 사용하기도 합니다. 하지만 오늘 글은 sentence representation이 그 목표이므로, 다루지 않겠습니다. 위에서 언급한 것과 같이 token이라는 개념은 다양하게 정의가 될 수 있습니다. 가장 일반적인 token의 단위는 단어(word)와 문자(character)입니다.  
+먼저 문장은 컴퓨터가 이해할 수 있는 숫자로 바꾸어야 분석을 진행할 수 있을 것입니다. 문장을 숫자로 바꾸는 단계를 두가지로 나눠 볼 수 있는데요, 문장의 요소 (단어가 될 수도 있고, 문자가 될 수도 있습니다. 이 단위를 token이라고 이야기 합니다.)를 숫자로 표현하는 단계(token representation)와 숫자화 된 단어들을 요약해서 문장을 숫자로 표현하는 단계(sentence representation)으로 나눠볼 수 있겠습니다.
 
-단어를 one-hot으로 나타낸다는 것은 주어진 데이터 셋에 한번이라도 등장하는 단어를 모두 고려하여 벡터를 만들 수 있어야 하므로,  단어를 나타내기 위한 벡터의 차원이 아주 커진다는 단점이 있습니다. 특히 한국어의 경우, 단어의 변형이 너무나도 많습니다. 그래서 우리가 다루어야 할 embedding 공간이 아주 커지는 문제가 있습니다. 여기에다가 한국어에는 독특하게 단어들마다 띄워쓰기가 모두 다를 수가 있죠. '스타벅스'라고 쓰기도 하지만 '스타 벅스'라고 쓰기도 하면 이 것들을 하나의 단어로 인식해야 할 텐데 one-hot 벡터로는 이러한 차이를 반영할 수 없습니다. 다른 언어는 상대적으로 한국어에 비해 이러한 문제가 덜합니다. 또한 단순 오타 또한 차원을 높이는 데 큰 영향을 주기도 합니다. 잘못 쓴 단어는 새로운 단어로 인식을 하게 되니까요. 하지만, 이렇게 얻어진 token representation을 잘 이해한다고 하면, 인지적으로 의미있는 새로운 표현이 가능할 것입니다. '대학교', '중학교', '고등학교'는 embedding 공간에서 아주 비슷한 곳에 모여 있을 것이고, 사람이 그 유사성을 인지하기에 문제가 없다는 것입니다. 한국어 처리에서는 형태소 분석을 통해서 subword를 찾는 방법으로 단어의 변형을 하여주곤 합니다만, 여전히 단순 철자 오류는 다루기가 어렵습니다.
+### Token representation
 
-반면 문자 단위의 representation은 상대적으로 작은 차원으로 표현을 할 수가 있습니다. 한국어로 표현되는 문자는 여전히 많은 수준이기는 하지만, 영어의 경우에는 알파벳 개수와 몇몇 문장부도 정도가 전부입니다. 그래서 문자를 표현하기 위한 one-hot 벡터도 고작 몇십 차원에서 표현이 가능합니다. 한국어도 역시 데이터셋에 있는 서로 다른 단어의 개수에 비해서는 한국어 문자의 개수가 그렇게 많지 않습니다. 따라서 단어를  처리하는 것보다는 문자를 처리하는 것이 훨씬 효율적일 수 있습니다. 하지만, 이렇게 문자 단위의 representation을 해놓게 되면, representation 공간 안에서 단어의 유사성들을 잘 표현할 수 있는가? 하는 질문이 당연히 생기게 됩니다. 아주 잘 된다는 것이 지금까지 스터디 결과라고 하는군요. (자세한 내용은 저도 잘 모르겠습니다만, 모형의 성능이 그다지 떨어지지 않는다는 결과가 있었습니다.)
- 
-그 다음 필요한 것이 이렇게 숫자로 표현된 token representation을 바탕으로 문장을 표현하는 sentence represntation 단계입니다. 여기에서는 한 5가지 정도의 sentence representation이 존재합니다. 
+Token을 숫자로 표현하는 가장 직관적인 방법은 단어에 순서를 부여하는 것이겠지요. '너의 목소리가 들려'라는 문장이 나타나면, '너의'는 1번, '목소리가'는 2번, '들려'는 3번, 이런 식으로 번호를 붙여나가는 방법일 것입니다. 전형적인 숫자로 표현되는 범주형 자료형으로서, 이러한 데이터를 분석할 때, 숫자화된 token을 one-hot 벡터로 나타냅니다. 통계학에서는 '지시변수' 혹은 indicator라고 부릅니다. 단어를 잘 표현하기 위해서 word2vec 등의 embedding을 사용하기도 합니다. 이 방법은 token representation을 소개하는 블로그에서 따로 다룰 예정이구요. (열심히 정리 중입니다. 해야할 게 너무 많네요..ㅠㅠ)
+
+위에서 언급한 것과 같이 token이라는 개념은 다양하게 정의가 될 수 있습니다. 가장 일반적인 token의 단위는 단어(word)와 문자(character)입니다.  
+
+단어를 one-hot으로 나타내는 방법은 주어진 데이터 셋에 한번이라도 등장하는 단어를 모두 카운트 해서, 각 단어를 하나의 차원으로 보고 벡터를 만드는 것입니다. 이렇게 하다 보니 수많은 단어가 포함되어 있는 데이터셋을 단어의 one-hot 벡터로 만들려면 벡터의 차원이 아주 커진다는 단점이 있습니다. 보통 수천에서 수만 차원에 이릅니다. 특히 한국어의 경우, 단어의 변형이 너무나도 많습니다. 그래서 우리가 다루어야 할 embedding 공간이 아주 커지는 문제가 있습니다. 이 문제는 stem 단어 혹은 어근을 찾음으로써 어느정도 해결이 됩니다. 해결이 된다기 보다는 그런 식으로 처리를 합니다.
+
+여기에다가 한국어에는 독특하게 단어들마다 띄워쓰기가 모두 다를 수가 있죠. '스타벅스'라고 쓰기도 하지만 '스타 벅스'라고 쓰기도 하면 이 것들을 하나의 단어로 인식해야 할 텐데 one-hot 벡터로는 이러한 차이를 반영할 수 없습니다. 다른 언어는 상대적으로 한국어에 비해 이러한 문제가 덜하다고 하는군요. 또한 단순 오타 또한 차원을 높이는 데 큰 영향을 주기도 합니다. 잘못 쓴 단어는 새로운 단어로 인식을 하게 되니까요.
+
+하지만, 이렇게 얻어진 token representation은, 인지적으로 이해하기는 쉬울 것입니다. '대학교', '중학교', '고등학교'는 embedding 공간에서 아주 비슷한 곳에 모여 있을 것이고, 사람이 그 유사성을 인지하기에 문제가 없다는 것입니다.
+
+반면 문자 단위의 representation은 상대적으로 작은 차원으로 표현을 할 수가 있습니다. 한국어로 표현되는 문자는 여전히 많은 수준이기는 하죠. 자음과 모음의 조합으로 아주 다양한 발음을 표현할 수 있는 특성 때문이죠. 반면, 영어의 경우에는 알파벳 개수와 몇몇 문장부호 정도가 전부입니다. 그래서 문자를 표현하기 위한 one-hot 벡터도 고작 몇십 차원에서 표현이 가능합니다. 따라서 단어를  처리하는 것보다는 문자를 처리하는 것이 훨씬 효율적일 수 있습니다. 하지만, 이렇게 문자 단위의 representation을 해놓게 되면, representation 공간 안에서 단어의 유사성들을 잘 표현할 수 있는가? 하는 질문이 당연히 생기게 됩니다. '대학교'의 '대'가 '대구'의 '대'와 같은 '대'일까요? 다른 '대'일까요? 가까운 '대'일까요? 먼 '대'일까요? 하지만, 최고 난이도의 번역에서조차 아주 잘 된다는 것이 지금까지 스터디 결과라고 하는군요. (자세한 내용은 저도 잘 모르겠습니다만, 모형의 성능이 그다지 떨어지지 않는다는 결과가 있다고 합니다. 저도 정확한 결과가 궁금하군요.)
+
+
+### Sentence representation
+
+그 다음 필요한 것이 이렇게 숫자로 표현된 token representation을 바탕으로 문장을 표현하는 sentence representation 단계입니다. 약 5가지 정도의 sentence representation이 있는데요. 다음과 같습니다.
 
 * CBoW (BoW 포함)
 * CNN
@@ -31,21 +54,27 @@ Attention mechanism은 자연어 처리 분야와 그 자연어 처리로부터 
 * Self-attention
 * RNN
 
-물론, 이 외에도 수많은 variant들이 있겠죠. 제가 알고 있는 정도가 이정도입니다. 하지만 이 정도 표현을 벗어나지는 않는 것 같습니다. 가장 쉬은 것이 CBoW라고 해서 token representation을 순서에 상관없이 모두 평균을 내버리는 것입니다. token을 one-hot으로 표현하느냐 아니면, embedding으로 표현하느냐에 따라 BoW와 CBoW로 나뉩니다. 하나의 token에 대한 representation은 차원이 동일하므로, representation 벡터의 원소끼리 모두 더해서 평균을 낼 수 있습니다. 그렇게 얻은 평균을 해당 문장의 대표값으로 사용하는 것입니다. 당연히 단어의 순서는 전혀 고려되지 않습니다. 비록 순서를 무시하기는 하지만, CBoW 방법은 sentimental analysis와 같은 text classification에서는 아주 잘 작동을 합니다. 하지만, 단어의 순서가 중요한 machine translation이나 sentence generation에 적합한 방법은 아닐 것입니다. 이 블로그에서는 제일 단순한 형태인 BoW를 이용해서 sentiment analysis를 진행하는 과정을 나타내고자 합니다.
+물론, 이 외에도 수많은 variant들이 있겠죠. 제가 알고 있는 정도가 이정도입니다. 하지만 이 정도 표현을 벗어나지는 않는 것 같습니다. 오늘은 BoW만 다루어 보겠습니다. token을 one-hot으로 표현하느냐 아니면, embedding으로 표현하느냐에 따라 BoW와 CBoW로 나뉩니다.
 
 ## BoW를 이용한 sentiment analysis
 
+Sentiment analysis는 문장을 보고 그 문장에 나타나 있는 감정이 어떤 것인지를 예측하는 문제로 text classification의 가장 대표적인 문제입니다. 여기에서는 좀 식상하기는 하지만, umich-sentiment-train.txt로 제공되는 영화 평점 데이터에서 부정/긍정 대답을 구분하는 문제에 적용해 보겠습니다. 참고로 말씀드리자면, 워낙 쉬운 문제라 accuracy는 거의 1의 정확도를 보입니다. 앞으로 조금씩 더 어려운 데이터셋에 방법들을 적용해 가는 과정을 보여주는 것도 이 블로그의 목표이기도 합니다.
 
-### Sentence representation
+각각의 token에 대한 representation은 차원이 동일하므로, representation 벡터의 원소끼리 모두 더하거나 평균을 낼 수 있습니다. 이렇게 얻은 하나의 벡터를 해당 문장의 대표값으로 사용하는 것입니다. 당연히 단어의 순서는 전혀 고려되지 않습니다. 비록 순서를 무시하기는 하지만, CBoW 방법은 sentimental analysis와 같은 text classification에서는 아주 잘 작동을 합니다. 하지만, 단어의 순서가 중요한 machine translation이나 sentence generation에 적합한 방법은 아닐 것입니다.
 
-Sentiment analysis는 문장을 보고 그 문장에 나타나 있는 감정이 어떤 것인지를 예측하는 문제로 text classification의 가장 대표적인 문제입니다. 여기에서는 좀 식상하기는 하지만, umich-sentiment-train.txt로 제공되는 영화 평점 데이터에서 부정/긍정 대답을 구분하는 문제에 적용해 보겠습니다. 참고로 말씀드리자면, 워낙 쉬운 문제라 거의 1의 정확도를 보입니다. 앞으로 조금씩 더 어려운 데이터셋에 방법들을 적용해 가는 과정을 보여주는 것도 이 블로그의 목표이기도 합니다.
-
-먼저 BoW에 대해서 이야기 해보겠습니다.
 수학적으로는 다음과 같이 단순하게 쓸 수 있겠지요. 먼저 문장마다 제각각이지만, 만약 하나의 문장에 들어 있는 token의 숫자가 $T$라 하면, 각 token을 $(e_1, \ldots, e_T)$로 나타냅니다. 그런다음 문장을 다음과 같이 표현한다는 것입니다.
 
 $$\frac 1 T \sum_{t=1}^T e_t$$
 
-token representation을 가지고 있기만 하면 한방에 문장의 표현을 얻을 수 있습니다.
+혹은
+
+$$\sum_{t=1}^T e_t$$
+
+너무 쉽죠? 이게 전부입니다. 이제 숫자로 표현된 문장을 분류하기만 하면 됩니다.
+
+
+## Python을 이용한 구현
+
 
 Python에서는 어떤 형태로 구현이 될까요? 먼저 다음의 module을 불러옵니다.
 
@@ -58,7 +87,7 @@ import collections
 ~~~
 
 네번째 줄에 있는 nltk 모듈은 가장 많이 사용되는 nlp를 위한 전처리 모듈로서 이 블로그에서는 문장을 단어 단위로 tokenize하기 위해서 사용됩니다.
-다섯번째 줄에 있는 collections는 보다 쉽게 count를 하기 위해 사용하는 module입니다. 기본적으로 python에서 제공해주는 collection 기능보다 더욱 많은 기능을 제공합니다. 이제 본격적으로 데이터를 불러오도록 하겠습니다. 
+다섯번째 줄에 있는 collections는 container에 들어있는 원소들의 count를 보다 쉽게 하기 위해 사용하는 module입니다. 기본적으로 python에서 제공해 주는 collection 기능보다 더욱 많은 기능을 제공합니다. 이제 본격적으로 데이터를 불러오도록 하겠습니다.
 
 ~~~
 word_freq = collections.Counter()
@@ -76,7 +105,7 @@ with open('../data/umich-sentiment-train.txt', 'rb') as f:
         num_rec += 1
 ~~~
 
-Collections에 있는 Counter class는  Container에 동일한 값의 자료가 몇개 있는지를 확인하는 객체입니다. 데이터가 저장되어 있는 file을 열고 개별 라인을 읽어오면서 label과 sentence를 분리합니다. 이렇게 얻어진 각각의 데이터에서 문장의 최대 길이와 전체 데이터셋에 등장하는 단어의 갯수를 셉니다. 
+Collections에 있는 Counter class는  Container에 동일한 값의 자료가 몇개 있는지를 확인하는 객체입니다. 데이터가 저장되어 있는 file을 열고 개별 라인을 읽어오면서 label과 sentence를 분리합니다. 이렇게 얻어진 각각의 데이터에서 문장의 최대 길이와 전체 데이터셋에 등장하는 단어의 갯수를 셉니다.
 
 이 분석에서는 최대 2000개의 단어만 고려할 것입니다. Word_freq에 저장되어 있는 정보를 활용해서 데이터에 가장 많이 등장하는 2000개 단요를 사용할 것입니다. 그런 다음, 한 문장을 구성하는 단어의 개수는 40개로 제한합니다. 만약 어떤 문장이 40개 이상의 단어로 구성이 되어 있으면, 최초 40개만 분석에 활용하고 그보다 짧은 문장이면 0을 채워 넣어서 40개 단어를 맞춥니다. 만약 2000개 안에 속하지 않는 단어를 만나면 1을 대입해서, 모르는 단어(Unknown)임을 표시합니다.
 
@@ -193,7 +222,7 @@ from mxnet.gluon import nn
 context = mx.gpu()
 ~~~
 
-tensorflow에서는 GPU와 CPU를 오가는 것이 그렇게 user-friendly 정의가 되어있지 않았습니다. 어떤 장비를 사용하는지에 따라 graph가 꼬이기도 하고, 뭔가 말로 표현하기는 좀 어렵지만, 굉장히 사람을 신경쓰이게 하는 면이 있었습니다. 하지만, gluon에서는 context를 지정하는 것으로 어떤 resource를 이용하는가에 대한 고민은 크게 하지 않아도 됩니다. GPU를 사용하고 싶으면 mx.gpu(0)를 CPU를 사용하고 싶녀면 mx.cpu(0)을 지정하면 됩니다. 
+tensorflow에서는 GPU와 CPU를 오가는 것이 그렇게 user-friendly 정의가 되어있지 않았습니다. 어떤 장비를 사용하는지에 따라 graph가 꼬이기도 하고, 뭔가 말로 표현하기는 좀 어렵지만, 굉장히 사람을 신경쓰이게 하는 면이 있었습니다. 하지만, gluon에서는 context를 지정하는 것으로 어떤 resource를 이용하는가에 대한 고민은 크게 하지 않아도 됩니다. GPU를 사용하고 싶으면 mx.gpu(0)를 CPU를 사용하고 싶녀면 mx.cpu(0)을 지정하면 됩니다.
 
 Gluon의 기본적인 programming style은 pytorch를 따릅니다. 다음과 같이 `nn.Block` class를 상속 받아서 구현하고자 하는 network를 정의하는 형태인데요. name_scope 안에 network에서 사용할 weight값이 들어 있는 layer들을 정의합니다. 그리고 실제 feed-forward 계산은 `forward` method에서 이루어집니다. Class 내에서 network를 쌓아가는 모습은 pytorch의 형태와 비슷하기는 하지만, 이를 Keras의 형태로 network를 정의할 수도 있습니다. 아마도 앞으로 nn.Sequence를 상속받은 class를 통해 network를 정의하는 예제도 따라 나올 것 같습니다.
 
@@ -208,7 +237,7 @@ class MLP(nn.Block):
             #self.dense2 = nn.Dense(32, activation = 'relu')
             self.bn = nn.BatchNorm()
             self.dense2 = nn.Dense(2)
-            
+
     def forward(self, x):
         x = self.embed(x)
         x = self.dense1(x)
@@ -218,7 +247,7 @@ class MLP(nn.Block):
         return x
 ~~~
 
-위에서는 1개의 dense layer를 이지고 있는 간단한 network를 정의했습니다. Batch-normalization을 적용했고, RELU activation 함수를 사용했죠. 그 결과 나오는 마지막 output은 2개의 node를 가지게 됩니다. softmax를 사용해서 이 두개의 node값을 긍정과 부정의 확률값으로 표현하게 될 것입니다. 다음과 같이 실제로 class를 객체화시킨 후에 mlp라는 객체가 가지고 있는 모수들, 다시 말하면 weight값,들을 초기화하는 단계를 거칩니다. Xavier initializer를 사용합니다. 물론, GPU를 사용하기 위해 context지지정해 줍니다. 
+위에서는 1개의 dense layer를 이지고 있는 간단한 network를 정의했습니다. Batch-normalization을 적용했고, RELU activation 함수를 사용했죠. 그 결과 나오는 마지막 output은 2개의 node를 가지게 됩니다. softmax를 사용해서 이 두개의 node값을 긍정과 부정의 확률값으로 표현하게 될 것입니다. 다음과 같이 실제로 class를 객체화시킨 후에 mlp라는 객체가 가지고 있는 모수들, 다시 말하면 weight값,들을 초기화하는 단계를 거칩니다. Xavier initializer를 사용합니다. 물론, GPU를 사용하기 위해 context지지정해 줍니다.
 
 ~~~
 mlp = MLP(input_dim = MAX_FEATURES, emb_dim = 50)
@@ -247,7 +276,7 @@ train_data = mx.io.NDArrayIter(data=[tr_x, tr_y], batch_size=batch_size, shuffle
 valid_data = mx.io.NDArrayIter(data=[va_x, va_y], batch_size=batch_size, shuffle = False)
 ~~~
 
-이렇게 하면 iterator로 정의한 것이므로, 메모리에 대한 걱정도 사라지게 됩니다. 
+이렇게 하면 iterator로 정의한 것이므로, 메모리에 대한 걱정도 사라지게 됩니다.
 
 이제 모형 관련된 준비 사항 및 데이터 관련 준비 사항도 모두 끝이 났습니다. 이제 이런 설정들을 바탕으로 실제 학습을 진행하면 됩니다. 다음은 실제 코드입니다.
 
@@ -282,7 +311,7 @@ for epoch in tqdm_notebook(range(n_epoch), desc = 'epoch'):
     #print([round(p) for p in pred][:10])
     tr_acc = accuracy_score(label, [round(p) for p in pred])
     tr_loss = _total_los/n_obs
-    
+
     ### Evaluate training
     valid_data.reset()
     n_obs = 0
@@ -306,5 +335,3 @@ for epoch in tqdm_notebook(range(n_epoch), desc = 'epoch'):
 ## 마치며
 
 단순히 단어의 one-hot representation만으로도 성능이 높은 모형을 구축할 수 있었습니다. 이 데이터셋이 가장 entry level의 쉬운 데이터셋이기도 합니다만, 사실 text classification에서는 이정도의 technique로도 충분히 좋은 성능을 얻을 수 있다고 합니다. 다음 글에서는 CNN을 이용한 sentence representation을 해보도록 하죠.
- 
-
