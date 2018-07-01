@@ -73,7 +73,7 @@ $$f(t_i, t_j) = W\phi \left\{\left(U_{left}, U_{right}\right) \cdot  \left(\begi
 
 먼저 모듈을 불러와야 겠습니다. 데이터를 불러와서 DataIterator를 만드는 과정까지는 앞의 블로그 [BoW를 이용한 text-classification](./sentence-representation-1.md)를 참고하시기 바랍니다. 여기에서는 실제로 위에서 보여드린 trick이 어떻게 구현되어 있는지를 살펴보도록 하겠습니다.
 
-먼저 코드 전체는 [relation_network]()을 참조하시기 바랍니다. 위에서 언급된 부분부터 확인해 보죠.
+먼저 코드 전체는 [relation_network](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_RN_representation.ipynb)을 참조하시기 바랍니다. 위에서 언급된 부분부터 확인해 보죠.
 
 ~~~
 # (x_i, x_j)의 pair를 만들기
