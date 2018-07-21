@@ -2,8 +2,8 @@
 layout: post
 title: 'Sentence representation - RNN'
 author: kion.kim
-date: 2018-0x-xx 17:00
-tags: [deeplearning, self-attention, nlp, sentence representation]
+date: 2018-06-28 17:00
+tags: [deeplearning, LSTM, nlp, sentence representation]
 ---
 
 ## 시작하며
