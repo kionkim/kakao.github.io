@@ -56,7 +56,9 @@ class Sentence_Representation(nn.Block):
         return lstm_out, self.hidden
 ```
 
-위에 있는 코드는 어떤 문장이 주어졌을 때 sentence representation을 LSTM을 기반으로 하는 코드입니다. 문장을 하나의 벡터로 표현하는 과정에서 위의 코드는 주어진 문장을 embedding layer를 통과시킨 결과물을 LSTM layer의 input으로 사용합니다. embedding layer는 `vocab_size`를 input으로 받아서 객체를 만들고, 실제 학습을 위한 데이터는 token index의 sequence를 활용합니다.
+위에 있는 코드는 어떤 문장이 주어졌을 때 sentence representation을 LSTM을 기반으로 하는 코드입니다. 문장을 하나의 벡터로 표현하는 과정에서 위의 코드는 주어진 문장을 embedding layer를 통과시킨 결과물을 LSTM layer의 input으로 사용합니다. 
+
+embedding layer는 `vocab_size`를 input으로 받아서 객체를 만들고, 실제 학습을 위한 데이터는 token index의 sequence를 활용합니다.
 
 ```
 self.embed = nn.Embedding(vocab_size, emb_dim)
