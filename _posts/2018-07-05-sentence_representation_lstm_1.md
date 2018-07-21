@@ -32,7 +32,7 @@ Googling을 해보니 위와 같은 구조가 보입니다. 대체적으로는 �
 
 ### Bieirectional LSTM은 그냥 독립적인 두개의 LSTM
 
-> 전체 코드는 [Single Hidden State](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_single_layer_LSTM_representation_lfw.ipynb)를 참조하시기를 바랍니다.
+> 전체 코드는 [Bidirectional LSTM](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_bidirectional_LSTM_representation_lfw.ipynb)를 참조하시기를 바랍니다.
 
 
 말한 것과 같이 가장 쉽게는 두개의 LSTM을 구해주면 됩니다. 단지 방향이 다를 뿐이지요. 가장 쉽게 Bidirectional LSTM을 구현하는 방법은 LSTM layer의 `bidirection` option을 사용하는 것입니다.
