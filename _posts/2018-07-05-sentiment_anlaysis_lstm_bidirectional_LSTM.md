@@ -6,6 +6,11 @@ date: 2018-07-05 17:00
 tags: [deeplearning, LSTM, nlp, sentence representation]
 ---
 
+
+
+
+
+
 ## 시작하며
 
 LSTM에서 1개의 LSTM layer를 이용해서 문장을 표현하는 방법을 지난 블로그에서 알아보았습니다. 말씀드린 것처럼 sentiment analysis를 위한 정보를 문장으로부터 뽑아내는 방법에는 여러가지가 있습니다. 오늘은 Bidirectional LSTM을 이용하는 방법에 대해서 알아보겠습니다. 두가지 방법을 알아볼텐데요. 하나는 LSTMCell을 이용해서 직접 Bidirection LSTM을 구현하는 방법과 다른 하나는 LSTM Layer를 이용해서 간단하게 구하는 방법입니다.
