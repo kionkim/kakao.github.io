@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Sentiment Analysis-LSTM -2'
+title: 'Sentiment Analysis- Bidirectional LSTM'
 author: kion.kim
 date: 2018-07-05 17:00
 tags: [deeplearning, LSTM, nlp, sentence representation]

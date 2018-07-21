@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Sentence representation - Relational Network'
+title: 'Sentiment Analysis - Relational Network'
 author: kion.kim
 date: 2018-06-21 17:00
 tags: [deeplearning, nlp, sentence representation, relation network, skip-gram]

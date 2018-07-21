@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'BoW를 이용한 text-classification'
+title: 'Sentiment Analysis - MLP'
 author: kion.kim
 date: 2018-06-17 17:00
 tags: [deeplearning, statistics, nlp models, text classification, BoW, machine learning]

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Sentence representation - RNN'
+title: 'Sentiment Analysis - LSTM'
 author: kion.kim
 date: 2018-06-28 17:00
 tags: [deeplearning, LSTM, nlp, sentence representation]
