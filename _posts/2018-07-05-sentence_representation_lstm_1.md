@@ -116,7 +116,56 @@ LSTMCell의 결과물은 LSTM과 비슷하기는 하지만 모양이 약간 다�
 
 결국 매 time step에서 forward LSTM과 backward LSTM을 concatenate한 후 이들의 평균을 sentence representation으로 봅니다. 그렇게 하기 위해서는 매 time step마다 hidden state의 값을 알아야 하는데요. 이 때 LSTMCell layer를 매 time step마다 update해야 합니다. 매 time step이 update될 때마다 그 hidden state를 저장한 후 저장된 matrix를 concat해 주어야 합니다. 그런 후에 평균을 내는 것이지요. 이런 과정은 다음의 코드로 구현할 수 있습니다.
 
+```
+class Sentence_Representation(nn.Block): ## Using LSTMCell : Average entire time step
+    def __init__(self, emb_dim, hidden_dim, vocab_size, dropout = .2, **kwargs):
+        super(Sentence_Representation, self).__init__(**kwargs)
+        self.vocab_size = vocab_size
+        self.emb_dim = emb_dim
+        self.hidden_dim = hidden_dim
+        with self.name_scope():
+            self.f_hidden = []
+            self.b_hidden = []
+            self.embed = nn.Embedding(self.vocab_size, self.emb_dim)
+            self.f_lstm = rnn.LSTMCell(self.hidden_dim // 2)
+            self.b_lstm = rnn.LSTMCell(self.hidden_dim // 2)
+            
+    def forward(self, x, _f_hidden, _b_hidden):
+        f_hidden = []
+        b_hidden = []
+        
+        self.f_hidden = _f_hidden
+        self.b_hidden = _b_hidden
+        
+        embeds = self.embed(x) # batch * time step * embedding
+        
+        # Forward LSTM
+        for i in range(embeds.shape[1]):
+            dat = embeds[:, i, :]
+            _, self.f_hidden = self.f_lstm(dat, self.f_hidden)
+            f_hidden.append(self.f_hidden[0])
+        
+        # Backward LSTM
+        for i in np.arange(embeds.shape[1], 0, -1):
+            dat = embeds[:, np.int(i - 1), :] # np.int() necessary
+            _, self.b_hidden = self.b_lstm(dat, self.b_hidden)
+            b_hidden.append(self.b_hidden[0])
+
+        f_hidden.reverse()
+        _hidden = [nd.concat(x, y, dim = 1) for x, y in zip(f_hidden, b_hidden)]
+        h = nd.concat(*[x.expand_dims(axis = 0) for x in _hidden], dim = 0)
+        h = nd.mean(h, axis = 0)
+        return h
+```
+
+역방향 LSTM과 순방향 LSTM은 서로 반대방향이므로, concat할 때 방향을 바꾸어주어야 합니다. 그 외에는 크게 문제될 부분은 없어 보입니다. 그렇게 concat한 후에는 각 time step으로부터 얻은 hidden state를 평균을 내야 합니다. hidden state의 dimension은 (Time Step $\times$ Batch size $\times$ Hidden dimension)이므로, 0번 축으로 평균을 냅니다.
+
+
 
 ## 결과
 
-워낙 쉬운 데이터셋이다 보니 accuracy 0.9라는 높은 성능을 얻습니다. 그것도 불과 5 epoch 이내에서 말입니다. 보다 자세한 결과물을 싣지는 않겠습니다. 그냥 위에 링크되어 있는 코드를 한번씩 돌려보시면 큰 무리 없이 이해하실 수 있을 것입니다. 다음은 LSTM layer가 2개인 경우 Gluon으로 어떻게 구현할 수 있는지를 간단하게 설명하겠습니다.
+여전히 0.99의 accuracy를 보이네요. 3,149개의 리뷰 중에 총 38개의 리뷰가 오분류되었습니다. 그 중 하나를 보아하니, 제가 봐도 좋다는 건지 나쁘다는 건지 헷갈리네요. 
+
+![mis_classify](/assets/mis_classify.png)
+
+이건 인정. 하지만, 나중에 보다 어려운 데이터를 바꿔가면서 어떤 식으로 LSTM을 응용했을 때 성능이 좋아지고 나빠지는지를 알아봐야 할 것 같습니다.
