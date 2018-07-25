@@ -6,7 +6,19 @@ date: 2018-0x-xx 17:00
 tags: [deeplearning, self-attention, nlp, sentence representation]
 ---
 
-Self Attention
+Self Attention은 
+
+
+GLUON의 LSTM 모듈에 대해서 자세하게 설명하고자 합니다.
+
+* Unroll only works if length = time step
+
+* LSTM output = The first output of unroll output
+
+* last cell state, last hidden state = Second ouput of unroll output
+
+
+
 
 Sentence representation을 하는 방법에는 여러가지가 있습니다. 먼저 token(word나 character)을 수치화 한 후 이를 다시 한번 요약해서 sentence representation을 진행합니다.
 
