@@ -51,7 +51,7 @@ $$ D_{novel} = \bigcup_{n=1}^{K_{novel} } \left\{ x'_{n,i} \right\}_{i=1}^{N'_n}
 
 ## ConvNet-base recognition model
 
-The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot | \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot | W^*)$ where $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$, the $K^*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^*$, namely, $p = C(z|W^*)$.
+The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot \vert \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot \vert W^*)$ where $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$, the $K^*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^*$, namely, $p = C(z\vert W^*)$.
 
 For the easeness of understanding, you can think of the network right before the output layer as feature extractor and the part after feature extractor can be considered as classifier. As I said before, it is just a regular network with somewhat different notation.
 
@@ -59,17 +59,17 @@ For the single traing phase, it can be said that we are searching for the optimi
 
 ## Few-shot classification weight generator
 
-During test time, this step modifiy weights from recognition model to be able to recognize newly introduced novel categories by assimilating them from base categories. For each category $n \in [1, N_{novel}]$, the few-shot classification weight generator $G(.,.|\phi)$ gets $Z'_n = \{z'_{n, i}\}_{i=1}^{N'_n}$, where $z'_{n, i} = F(x'_{n,i} | \theta)$ to generator weights for novel categories. Here $\phi$ is a set of learnable parameters.
+During test time, this step modifiy weights from recognition model to be able to recognize newly introduced novel categories by assimilating them from base categories. For each category $n \in [1, N_{novel}]$, the few-shot classification weight generator $G(.,.\vert\phi)$ gets $Z'_n = \{z'_{n, i}\}_{i=1}^{N'_n}$, where $z'_{n, i} = F(x'_{n,i} \vert \theta)$ to generator weights for novel categories. Here $\phi$ is a set of learnable parameters.
 
-> Note that novel and base data share the same feature extractor, $F(\cdot | \theta)$.
+> Note that novel and base data share the same feature extractor, $F(\cdot \vert \theta)$.
 
 Weight generator generates the weights for novel category using information from extracted feature from novel categories and weights from base categories as 
 
-$$w'_n = G(Z'_n, W_{base}|\phi)$$
+$$w'_n = G(Z'_n, W_{base}\vert\phi)$$
 
 Therefore if we deonte $W_{novel} = \{ w'_n\}_{n=1}^{K_{novel}}$ as weight vector of size $d$ for novel categoreis, the classifier can be written,
 
-$$C(\cdot | W^*), W^* = W_{base} \bigcup W_{novel}$$
+$$C(\cdot \vert W^*), W^* = W_{base} \bigcup W_{novel}$$
 
 By appending weights for novel categories, which borrows information from base category classification task, to weights for base case, we can quickly classify novel categories from the base one without losing classification power for the base one.
 
@@ -90,4 +90,4 @@ To overcome this issue, they do the folloiwng
 
 $$ x_k = \tau \cdot cos(z, w_k^*) = \tau \cdot \bar z^T \bar w_k^*, $$
 
-where $\bar z = \frac z {||z||}$ and $\bar w_k^* = \frac{w_k^*}{||w_k^*||}$.
+where $\bar z = \frac z {\|z\|}$ and $\bar w_k^* = \frac{w_k^*}{\|w_k^*\|}$.
