@@ -22,7 +22,7 @@ LSTM을 이용해서 문장의 여러 특성들을 뽑을 수 있습니다. 지�
 
  ![Zhouhan et al. (2017)](/assets/self-attention-structure.png)
 
-결국 classifier의 입력으로 들어가는 데이터는 그림 상에서 M이라는 행렬입니다. M 행렬은 $r \times (2\cdot u)$의 크기를 지닙니다. 여기서 $r$은 우리가 몇개의 관점에서 문장을 요약할지를 나타내고, $u$는 LSTM layer의 hidden dimension입니다. Bidirectional LSTM이므로 $2\cdotu u$만큼의 크기가 된 것입니다. 최종적으로 $M$이라는 결과물을 얻기 위해서는 다음의 변환 과정을 거칩니다.
+결국 classifier의 입력으로 들어가는 데이터는 그림 상에서 M이라는 행렬입니다. M 행렬은 $r \times (2\cdot u)$의 크기를 지닙니다. 여기서 $r$은 우리가 몇개의 관점에서 문장을 요약할지를 나타내고, $u$는 LSTM layer의 hidden dimension입니다. Bidirectional LSTM이므로 $2\cdot u$만큼의 크기가 된 것입니다. 최종적으로 $M$이라는 결과물을 얻기 위해서는 다음의 변환 과정을 거칩니다.
 
 $$ M = A H = \left\{ softmax(W_2 \tanh (W_1 H^T)\right\}\cdot [H_{forward}, H_{backward}]$$
 
