@@ -51,7 +51,7 @@ $$ D_{novel} = \bigcup_{n=1}^{K_{novel} } \left\{ x'_{n,i} \right\}_{i=1}^{N'_n}
 
 ## ConvNet-base recognition model
 
-The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot \vert \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot \vert W^*)$ where $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$, the $K^*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^*$, namely, $p = C(z\vert W^*)$.
+The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot \vert \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot \vert W^*)$. where $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$, the $K^*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^*$, namely, $p = C(z\vert W^*)$.
 
 For the easeness of understanding, you can think of the network right before the output layer as feature extractor and the part after feature extractor can be considered as classifier. As I said before, it is just a regular network with somewhat different notation.
 
