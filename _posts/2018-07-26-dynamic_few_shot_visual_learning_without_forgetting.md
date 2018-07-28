@@ -11,7 +11,7 @@ tags: [deeplearning, nlp, attention, skip connection, NMT]
 Recently, we are interested in meta learning to cope with the cases where we don't have enough observations for classification. This happens pretty much commonly in business situation as there are always brand new products released in the market. Whenever a new product is introduced in the market, managements eager to know who migiht be interested in new product and want to attack them more efficiently with target marketing. In modeling terminology, we face extremely imbalanced classification problem everyday.
 
 
-Few shot learning is the one that we would like to do exactly. After showing a couple of examples, we want the algorithm quickly recognize new category. Few show learning was popular in a couple of years ago but there were not many researchers who adress that issue for a couple of years. After MAML and SNAIL from BAIR group, it's getting more popularity and few shot learning is one of the hottest topics in deep learning area. 
+Few shot learning is the one that we would like to do exactly. After showing a couple of examples, we want the algorithm quickly recognize new category, i.e., identify a group of customers who might like the product. Few show learning was popular in a couple of years ago but there were not many researchers who adress that issue since after. MAML and SNAIL from BAIR group actually resurrect the topic and few shot learning is one of the hottest topics in deep learning area. 
 
 Today we will going to go over brand new paper on few shot learning, "Dynamic Few-Shot Visual Learning without Forgetting", which is presented in CVPR, 2018
 
@@ -91,3 +91,49 @@ To overcome this issue, they do the folloiwng
 $$ x_k = \tau \cdot cos(z, w_k^*) = \tau \cdot \bar z^T \bar w_k^*, $$
 
 where $\bar z = \frac z {\|z\|}$ and $\bar w_k^* = \frac{w_k^*}{\|w_k^*\|}$.
+
+## Few-shot classification weight generator
+
+
+### Feature averaging based weight inference
+
+The number of examples in novel category typically $N'$ is less than 5. This small number of examples will be augmented by existing information through classification weight vector of base categories. The simplest method for blending existing information with new one is through **"Feature averaging based weight inference"**
+
+Thanks to cosine similarity based ConvNet, classifiers force  the feature extractor to learn feature vectors that form compact category-wise clusters. That means weights are the representative of each category. 
+
+The obvious choice is to infer the classification weight vector $w'$ by averaging the feature vectors of the training examples.
+
+$$w'_{avg} = \frac 1 {N'} \sum_{i=1}^{N'} \bar z'_i$$
+
+The final classification weight vector in case we only use the feature averaging mechanism is 
+
+$$ w' = \phi_{avg} \odot w'_{avg},$$
+
+here $\odot$ is Hadamard product, and $\phi_{avg} \in \mathbb R^d$ and it is learnable parameter. It, however, does not fully utilize information from training eamples.
+
+
+### Attetion-based weight inference
+
+For better use of information, they improved the above algorithm with attention mechanism, that is to 'look' at a memory that contains novel classification weight vectors.
+
+More specifically an extra attention-based classification weight vector $w'_{att}$ is computed as:
+
+$$w'_{att} = \frac 1 {N'} \sum_{i=1}^{N'} \sum_{b=1}^{K_{base}} Att(\phi_q \bar z'_i , k_b) \cdot \bar w_b,$$
+
+where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that transforms the feature vector $\bar z'_i$ to query vector used for querying the memory, $\{ k_b \in \mathbb R^d \}_b^{K_{base}}$ is a set of $K_{base}$ learnable keys (one per base category) used for indexing the memory and $Att(\cdot, \cdot)$.
+
+
+# Training procedure
+
+$$ \frac 1 {K_{base}} \sum_{b =1 }^{K_{base}} \frac 1 {N_b} \sum_{i= 1} ^{N_b}loss(x_{b,i}, b),$$
+where $loss (x, y)$ is the negative log-probability $-\log (p_y)$ of the $y$-th category in the probability vector $ p = C(F(x| \theta)|W^*)$. $W^*$ depends on training phase.
+
+### 1st training stage: 
+
+* We only learn ConvNet recognition model without few-shot classification weight generator. This is done in exactly the same way as for any other standard recognition model.
+
+### 2nd training stage:
+
+In order to train the few shot classification weight generator, in each batch we randomly pick $K_{novel}$ “fake” novel categories from the base categories and we treat them in the same way as we will treat the actual novel categories after training. Specifically, instead of using the classification weight vectors in $W_{base}$ for those “fake” novel categories, we sample $N'$ training examples (typically $N' \le 5$) for each of them, compute their feature vectors $Z' = \{z'_i\}_{i = 1}^{N'}$, and give those feature vectors to the few-shot classification weight generator $G(., .|\phi)$ in order to compute novel classification weight generators. The inferred classification weight vectors are used for recognizing the “fake” novel categories. Everything is trained end-to-end.
+
+Note that we take care to exclude from the base classification weight vectors that are given as a second argument to the few-shot weight generator $G(\cdot, \cdot|\phi)$ those classification vectors that correspond to the “fake” novel categories. In this case $W^∗$ is the union of the “fake” novel classification weight vectors generated by $G(\cdot, \cdot|\phi)$ and the classification weight vectors of the remaining base categories.
