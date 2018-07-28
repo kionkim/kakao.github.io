@@ -82,7 +82,7 @@ The following figure depicts all components of the model
 
 ## Cosine-similarity based recognition model
 
-ConvNet only differs from standard neural networks in the way calculating final score for the classifier. Suppoisng that an example with extracted feature, $z$, regular neural netwoks calculate the score for the $k$ the category first by $s_k = z^Tw_k^*$, where $w^*_k$ is the $k$-th classification weight vector in $W^*$ and then $p_k = softmax(s)$.
+ConvNet only differs from standard neural networks in the way calculating final score for the classifier. Suppoisng that an example with extracted feature, $z$, regular neural netwoks calculate the score for the $k$ the category first by $s_k = z^Tw_k^\*$, where $w^*_k$ is the $k$-th classification weight vector in $W^\*$ and then $p_k = softmax(s)$.
 
 But convnet may differ the scale of $w_k$'s for the novel categories, i.e., $w_k \in W_{novel}$, which calculated separately. This is because base learner involves so many data to train with and those parameter evolves very slowly and smoothly with small SGD steps over the course of their training, but the novel classification weights are dynamically predicted by weight generator based on input feature vectors that may vary a lot.
 
