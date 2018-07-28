@@ -51,11 +51,11 @@ $$ D_{novel} = \bigcup_{n=1}^{K_{novel} } \left\{ x'_{n,i} \right\}_{i=1}^{N'_n}
 
 ## ConvNet-base recognition model
 
-The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot \vert \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot \vert W^\* )$, where $W^\* = \{ w_k^\* \in \mathbb R^d \}_{k= 1}^{K^\* }$, the $K^\*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^\*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^\*$, namely, $p = C(z\vert W^\* )$.
+The ConvNet-based recognition model is not that much special. It is just a regular neural network classifier for $K_{base}$ categories. It consists of two component: feature extractor, $F(\cdot \vert \theta)$, where $\theta$ being learnable parameters and classifier $C(\cdot \vert W^* )$, where $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^* }$, the $K^*$ many sets of learnable classification weights of size $d$. I.e., Classifier has $K^*$ many classification vectors. The classifier get feature representation $z$ as input and results in the score vector of size $K^*$, namely, $p = C(z\vert W^* )$.
 
 For the easeness of understanding, you can think of the network right before the output layer as feature extractor and the part after feature extractor can be considered as classifier. As I said before, it is just a regular network with somewhat different notation.
 
-For the single traing phase, it can be said that we are searching for the optimial paraemter $\theta$ for $W^\* = W_{base}$.
+For the single traing phase, it can be said that we are searching for the optimial paraemter $\theta$ for $W^* = W_{base}$.
 
 ## Few-shot classification weight generator
 
@@ -69,7 +69,7 @@ $$w'_n = G(Z'_n, W_{base}\vert\phi)$$
 
 Therefore if we deonte $W_{novel} = \{ w'_n\}_{n=1}^{K_{novel}}$ as weight vector of size $d$ for novel categoreis, the classifier can be written,
 
-$$C(\cdot \vert W^\* ), W^\* = W_{base} \bigcup W_{novel}$$
+$$C(\cdot \vert W^* ), W^* = W_{base} \bigcup W_{novel}$$
 
 By appending weights for novel categories, which borrows information from base category classification task, to weights for base case, we can quickly classify novel categories from the base one without losing classification power for the base one.
 
@@ -82,15 +82,15 @@ The following figure depicts all components of the model
 
 ## Cosine-similarity based recognition model
 
-ConvNet only differs from standard neural networks in the way calculating final score for the classifier. Suppoisng that an example with extracted feature, $z$, regular neural netwoks calculate the score for the $k$ the category first by $s_k = z^Tw_k^\*$, where $w^\*_k$ is the $k$-th classification weight vector in $W^\*$ and then $p_k = softmax(s)$.
+ConvNet only differs from standard neural networks in the way calculating final score for the classifier. Suppoisng that an example with extracted feature, $z$, regular neural netwoks calculate the score for the $k$ the category first by $s_k = z^Tw_k^*$, where $w^*_k$ is the $k$-th classification weight vector in $W^*$ and then $p_k = softmax(s)$.
 
 But convnet may differ the scale of $w_k$'s for the novel categories, i.e., $w_k \in W_{novel}$, which calculated separately. This is because base learner involves so many data to train with and those parameter evolves very slowly and smoothly with small SGD steps over the course of their training, but the novel classification weights are dynamically predicted by weight generator based on input feature vectors that may vary a lot.
 
 To overcome this issue, they do the folloiwng
 
-$$ x_k = \tau \cdot cos(z, w_k^\* ) = \tau \cdot \bar z^T \bar w_k^\*, $$
+$$ x_k = \tau \cdot cos(z, w_k^* ) = \tau \cdot \bar z^T \bar w_k^*, $$
 
-where $\bar z = \frac z {\|z\|}$ and $\bar w_k^\* = \frac{w_k^\* }{\|w_k^\* \|}$.
+where $\bar z = \frac z {\|z\|}$ and $\bar w_k^* = \frac{w_k^* }{\|w_k^* \|}$.
 
 ## Few-shot classification weight generator
 
@@ -126,7 +126,7 @@ where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that trans
 # Training procedure
 
 $$ \frac 1 {K_{base}} \sum_{b =1 }^{K_{base}} \frac 1 {N_b} \sum_{i= 1} ^{N_b}loss(x_{b,i}, b),$$
-where $loss (x, y)$ is the negative log-probability $-\log (p_y)$ of the $y$-th category in the probability vector $ p = C(F(x\vert \theta)\vertW^\* )$. $W^\*$ depends on training phase.
+where $loss (x, y)$ is the negative log-probability $-\log (p_y)$ of the $y$-th category in the probability vector $ p = C(F(x\vert \theta)\vert W^* )$. $W^*$ depends on training phase.
 
 ### 1st training stage: 
 
