@@ -97,7 +97,7 @@ where $\bar z = \frac z {\|z\|}$ and $\bar w_k^* = \frac{w_k^* }{\|w_k^* \|}$.
 
 ### Feature averaging based weight inference
 
-The number of examples in novel category typically $N'$ is less than 5. This small number of examples will be augmented by existing information through classification weight vector of base categories. The simplest method for blending existing information with new one is through \*\*"Feature averaging based weight inference"\*\*
+The number of examples in novel category typically $N'$ is less than 5. This small number of examples will be augmented by existing information through classification weight vector of base categories. The simplest method for blending existing information with new one is through **"Feature averaging based weight inference"**
 
 Thanks to cosine similarity based ConvNet, classifiers force  the feature extractor to learn feature vectors that form compact category-wise clusters. That means weights are the representative of each category. 
 
@@ -120,7 +120,7 @@ More specifically an extra attention-based classification weight vector $w'_{att
 
 $$w'_{att} = \frac 1 {N'} \sum_{i=1}^{N'} \sum_{b=1}^{K_{base}} Att(\phi_q \bar z'_i , k_b) \cdot \bar w_b,$$
 
-where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that transforms the feature vector $\bar z'_i$ to query vector used for querying the memory, $\{ k_b \in \mathbb R^d \}_b^{K_{base}}$ is a set of $K_{base}$ learnable keys (one per base category) used for indexing the memory and $Att(\cdot, \cdot)$.
+where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that transforms the feature vector $\bar z\'_i$ to query vector used for querying the memory, $\{ k_b \in \mathbb R^d \}_b^{K_{base}} $ is a set of $K_{base} $ learnable keys (one per base category) used for indexing the memory and $Att(\cdot, \cdot)$.
 
 
 # Training procedure
