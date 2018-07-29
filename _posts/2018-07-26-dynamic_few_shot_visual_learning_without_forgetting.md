@@ -120,7 +120,7 @@ More specifically an extra attention-based classification weight vector $w'_{att
 
 $$w'_{att} = \frac 1 {N'} \sum_{i=1}^{N'} \sum_{b=1}^{K_{base}} Att(\phi_q \bar z'_i , k_b) \cdot \bar w_b,$$
 
-where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that transforms the feature vector  learnable keys (one per base category) used for indexing the memory and $Att(\cdot, \cdot)$.
+where $\phi_q \in \mathbb R^{d\times d}$ is a learnable weight matrix that transforms the feature vector $\bar z'_i$ to query vector used for querying the memory, $\{k_b \in \mathbb R^d \}_b^{K_{base}}$ is a set of $K_{base} $ learnable keys (one per base category) used for indexing the memory and $Att(\cdot, \cdot)$.
 
 
 # Training procedure
