@@ -16,4 +16,4 @@ GAN이 워낙 hot하기도 하고 해서 여가시간을 활용해서 coding을 
 
 GAN은 가장 대표적인 생성 모형으로 2013년 Ian Goodfellow의 논문에서 시작이 되었습니다. 두개의 서로 경쟁하는 network들이 하나의 network는 계속 이미지를 만들어 내고(generator), 다른 하나의 network는 만들어진 image(fake image)와 실제 이미지(real image)를 구분하는 역할을 합니다. 위조지폐를 만들어내는 위조범과 위조 지폐를 감별하는 경찰의 이야기는 이제 이미 지겨운 cliche가 되어버린지 오래입니다.
 
-가장 간단한 형태의 network는 
+가장 간단한 형태의 network는 rksk
