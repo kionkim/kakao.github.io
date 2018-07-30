@@ -8,18 +8,16 @@ tags: [deeplearning, nlp, sentence representation, CNN, sentiment analysis, text
 
 # Introduction
 
-Let's think about the way human understand sentence. We read the sentence from left to right (it is not the case in the ancient asisan culture though) word by word memorizing the meaning of words first. Words themselves may have very different meaing depending where they are placed or how they were used. To understand real meaning of words, we break the sentence down into smaller phrases, groups of words, to get the right meaning of words in the context of sentence. Lastly, we weave the meanings from phrases to understand the sentence finally. How to mimic this behavior or reading?
+Let's think about the way human understand sentence. We read the sentence from left to right (it is not the case in the ancient asisan culture though) word by word memorizing the meaning of words first. Words themselves may have very different meaning depending where they are placed or how they were used. To understand real meaning of words, we break the sentence down into smaller phrases, groups of words, to get the right meaning of words in the context of sentence. Lastly, we weave the meanings from phrases to understand the sentence finally. How to mimic this behavior or reading?
 
 
 # Recurrent network is not enough
 
-Recurrent neural network models the way human's reading behavior by taking the sentance as sequence of words(possibly, token can be better expression, here we stick with **word**) in order. It calculates conditional probability given the previously read words. Especially, LSTM can adjust itself the amount of memory for each word to get best understanding of sentence. 
-
-RNN also can be used to model hierarchical way of understanding sentence (word - phrase - sentence - paragrph structure) by stacking layers.
+Recurrent neural network models the way human's reading behavior by taking the sentance as sequence of words(possibly, token can be better expression, here we stick with **word**) in order. It calculates conditional probability given the previously read words. Especially, LSTM can adjust itself the amount of memory for each word to get best understanding of sentence. RNN also can be used to model hierarchical way of understanding sentence (word - phrase - sentence - paragrph structure) by stacking layers.
 
 Bidirectional RNN can be another option for better understanding the sentence. From time to time, the word at the end of sentence can be helpful in understanding the words located in the earlier part of sentence. Bidirectional RNN allows memory cells to collect information from the back to front of sentence. By concatenating RNN cells from both forward and backward direction, meaning of words get clearer than just using single RNN cell.
 
-One of the biggest issues with RNN is **speed** and **parallelization**. Sequential nature of RNN prevents it from parallel programming and it ends up with very slow training speed. Memory cells have many parameters as well. For LSTM cell, we have parameters for gates and states and it makes the algorithm even slower.
+One of the biggest issues with RNN is **speed** and **parallelization**. Sequential nature of RNN prevents it from parallel programming and it ends up with very slow training speed. To make it even worse, memory cells have many parameters compared to CNN and it is another source of inefficiency.
 ![lstm](/assets/lstm.PNG)
 
 # CNN can do something about it.
@@ -30,17 +28,20 @@ Adidtionally, as CNN utilize only words around the word that the algorithm focus
 
 # CNN architecture for sentiment analysis.
 
-In this article, we will implement [Kim et al. (2014)](http://www.aclweb.org/anthology/D14-1181). Not exactly but versy similarly.
+In this article, we will implement [Kim et al. (2014)](http://www.aclweb.org/anthology/D14-1181). Not exactly but very similarly keeping their idea.
 
 The following visual came from the paper and if you understand this clearly, I think you are almost there.
 
-> NOTE: Based on my personal experience, most of papers are not kind enough to tell every detail about their idea and it is very hard to implment their idea correctly without those implicit complication. This paper, however, seems to be relatively straightforward to implement.
+> NOTE: Based on my personal experience, most of papers are not kind enough to tell every detail about their idea and it is very hard to implment their idea correctly without those implicit elements hardly found in the original paper. This paper, however, seems to be relatively straightforward to implement.
 
 ![kim_yoon_2014](/assets/kim_yoon_2014.png)
 
+More fancy plot with the same idea can be found below.
+
+![https://arxiv.org/pdf/1510.03820.pdf](/assets/sensitivity_analysis_cnn.png)
 It consitst of couple of 1D convolution layer with different kernel size on word embeddings. By doing this, we can retrieve information from various word groups.
 
-The feature maps obtained by applying 1D convolution layers sequentially from the start to the end of sentence are fed into max-pooling layer to summarize those $N - k + 1$, feature maps into single number. Here $N$ is the number of words in sentence and $k$ is the size of 1D convolution filter. Concatenating those numbers from max-pooling layer, we get number of 1D convolution layer long vector and it is going to be input for a classifier architected with fully connected layer.
+The feature maps obtained by applying 1D convolution layers sequentially from the start to the end of sentence are fed into max-pooling layer to summarize those $N - k + 1$, feature maps into single number. Here $N$ is the number of words in sentence and $k$ is the size of 1D convolution filter. Concatenating those outputs from max-pooling layer (just a scalar), we get a vector as long as number of 1D convolution layers and it is going to be input for a classifier architected with fully connected layer.
 
 Before dive into detail of gluon implementation, let's consider dimensionality of embedding and feature maps. After data going through embedding layer, for each sentence, we have two dimensional matrix of size $N \times e$, where $N$ is the number of words in sentence (the same as defined above) and $e$ is the dimensionality embedded each word into. That means each row means a embed word and we have word-many rows in the matrix. In gluon, there is no way to apply 1D convolution layer for matrix. So, even though it is **1D convolutional layer** that we need for convolution, we have to use 2D convolutional layers with appropriate kernel size defined to act as if it is 1D convolutional layers. 
 
@@ -112,3 +113,10 @@ so run off because hated top gun mission impossible cocktail --- Label:0.0
 ```
 
 I will leave it as a question for the readers of this article if those erroneous sentences deserve or not.
+
+
+## Reference
+ 
+ * https://arxiv.org/pdf/1510.03820.pdf
+ * http://www.aclweb.org/anthology/D14-1181
+ * http://docs.likejazz.com/cnn-text-classification-tf/#fn:fn-3
