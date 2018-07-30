@@ -17,7 +17,7 @@ Today we will going to go over brand new paper on few shot learning, "Dynamic Fe
 
 # Few shot learning
 
-Few shot learning is a trial to mimic human behavior in recognizing brand new concept after exposing to just a few examples, like children easily figure out bicycle at their first sight. This paper proposed an architecture to tackle this problem, focusing on 
+Few shot learning is a trial to mimic human behavior in recognizing brand new concept after being exposed to just a few examples, like children easily figure out bicycle at their first sight. This paper proposed an architecture to tackle this problem, focusing on 
 
 (a) speed 
 (b) keeping accucary for existing categories, 
