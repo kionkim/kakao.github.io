@@ -166,6 +166,46 @@ class Sentence_Representation(nn.Block): ## Using LSTMCell : Average entire time
 역방향 LSTM과 순방향 LSTM은 서로 반대방향이므로, concat할 때 방향을 바꾸어주어야 합니다. 그 외에는 크게 문제될 부분은 없어 보입니다. 그렇게 concat한 후에는 각 time step으로부터 얻은 hidden state를 평균을 내야 합니다. hidden state의 dimension은 (Time Step $\times$ Batch size $\times$ Hidden dimension)이므로, 0번 축으로 평균을 냅니다.
 
 
+### 각 time step에서 output만을 활용한다면..
+
+각 time step에서의 LSTM output은 $o_t * h_t$로 정의됩니다. 여기서 $h_t$는 $t$ step에서의 hidden state를 의미합니다. Gluon에서는 각 time step의 output을 이요할 때, BidirectionalCell이라는 함수를 사용하면 쉽게 그 결과를 뽑을 수 있는데요. 다음과 같이 작성하면 됩니다. BidirectionalCell에는 LSTMCell 2개가 input으로 들어가서 문장의 순방향 및 역방향 정보를 scan하게 됩니다.
+
+~~~
+class Sentence_Representation(nn.Block):
+    def __init__(self, **kwargs):
+        super(Sentence_Representation, self).__init__()
+        for (k, v) in kwargs.items():
+            setattr(self, k, v)
+        
+        with self.name_scope():
+            self.embed = nn.Embedding(self.vocab_size, self.emb_dim)
+            self.drop = nn.Dropout(.2)
+            self.bi_rnn = rnn.BidirectionalCell(
+                 rnn.LSTMCell(hidden_size = self.hidden_dim // 2),  #mx.rnn.LSTMCell doesnot work
+                 rnn.LSTMCell(hidden_size = self.hidden_dim // 2)
+            )
+            self.w_1 = nn.Dense(self.d, use_bias = False)
+            self.w_2 = nn.Dense(self.r, use_bias = False)
+
+    def forward(self, x, hidden):
+        embeds = self.embed(x) # batch * time step * embedding
+        h, _ = self.bi_rnn.unroll(length = embeds.shape[1] \
+                                       , inputs = embeds \
+                                       , layout = 'NTC' \
+                                       , merge_outputs = True)
+        # For understanding
+        batch_size, time_step, _ = h.shape
+        # get self-attention
+        _h = h.reshape((-1, self.hidden_dim))
+        _w = nd.tanh(self.w_1(_h))
+        w = self.w_2(_w)
+        _att = w.reshape((-1, time_step, self.r)) # Batch * Timestep * r
+        att = nd.softmax(_att, axis = 1)
+        x = gemm2(att, h, transpose_a = True)  # h = Batch * Timestep * (2 * hidden_dim), a = Batch * Timestep * r
+        return x, att
+~~~
+
+간단히 그 결과는 `unroll`이라는 method로 얻을수 있겠습니다. 해당 method는 각 time step에서의 ouput을 첫번째 결과물로, 최종 hidden state의 값을 두번째 결과물로 return합니다. 우리는 첫번째 결과물만 중요하므로, 위와 같이 첫번째 return 값만 가져와서 작업을 진행할 수 있습니다. 코드는 [여기](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_RNN_SA_umich.ipynb)에 정리되어 있습니다. 참고하세요.
 
 ## 결과
 
