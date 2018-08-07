@@ -19,7 +19,7 @@ For better understanding of sentence, the order of words should be considered mo
 
 $$ H =  (h_1, \ldots, h_T), \quad h_i \in \mathbb R^d $$
 
-When we use those information, we are frequently use the hidden state at the last time step. It is not so easy to express all information from the sentence stored at only a small sized vector.
+When we use those information, we frequently use the hidden state at the last time step only. It is not so easy to express all information from the sentence stored at only a small sized vector.
 
 ### CNN
 
@@ -29,10 +29,10 @@ Borrowing the idea from $n$-gram techniques, CNN summarize local information aro
 
 1D kernel of size 3 scan the tokens around the position we want to summarize information for. For this, we have to use padding of size 1 to keep the length of the feature map after filtering the same as the original length $T$. The number of output channel is $c_1$, by the way. 
 
-Another fiter will be applied to the feature map and the input is finally transformed into $c_2 \times T$. This series of process mimics the way human read the sentence, by understanding meaning of 3 tokens and then use them to understand higher level concepts. As a side product, we can enjoy much faster computation using well-optimized CNN algorithms implemented in deep learning frameworks.
+Another fiter is be applied to the feature map and the input is finally transformed into $c_2 \times T$. This series of process mimics the way human read the sentence, by understanding meaning of 3 tokens and then combine them to understand higher level concepts. As a side product, we can enjoy much faster computation using well-optimized CNN algorithms implemented in deep learning frameworks.
 
 ### Relation network
-The pair of words may give us more clear information about the sentence. For example, the word 'like' may have different meaning depending on the usage, for example, 'I like' is different from 'like this'. If we consider 'I' and 'like' together, we can more clearly about the sentiment of sentence. It is a positive. **Skip gram** is a technique to retrieve infromation from the pair of words. It does not have to be adjacent pairs. It allow the gap between them as the word 'skip' suggests. 
+The pair of words may give us more clear information about the sentence. There are many cases where a word may have different meaning depending on the usage. for example, the word 'like' in 'I like' is different from that  in 'like this'. If we consider 'I' and 'like' together, we can be more clear about the sentiment of sentence then the case where we use 'like' and 'this' together. It is definitely positive signal. **Skip gram** is a technique to retrieve infromation from the pair of words. It does not have to be adjacent pairs. It allow the gap between them as the word 'skip' suggests. 
 
 ![rel_net](/assets/rel_net.png)
 
@@ -43,7 +43,7 @@ As you can see from the above figure, a pair of tokens are fed into a function $
 
 We can write down those three different approaches in a single general form as below:
 
-$$ h_t = I_{t1}f(x_t, x_{1}) + \cdots + I_{t(t-1)}f(x_t, x_{t-1})  + I_{t(t+1)}f(x_t, x_{t+1}) + \cdots + I_{tT}f(x_t, x_{T})$$
+$$ h_t = I_{t, 1}f(x_t, x_{1}) + \cdots + I_{t, (t-1)}f(x_t, x_{t-1})  + I_{t, (t+1)}f(x_t, x_{t+1}) + \cdots + I_{t, T}f(x_t, x_{T})$$
 
 With all $I_{t\cdot}$'s being 1, the general form says that any *skip bigram*s **evenly** contribute to the model.
 
@@ -53,11 +53,11 @@ $$ h_t = f(x_t, x_{t-k}) + \cdots + f(x_t, x_{t-1}).$$
 
 With bidirectional rnn, we can consider backward relation from $x_T$ to $x_t$ though. 
 
-On the other hand, CNN browse information only around the token of interest, if we only cares about $k$ tokens before and after token $x_t$, the general formula can be shortened as below:
+On the other hand, CNN browse information only around the token of interest, if we only cares about $k$ tokens before and after token $x_t$, the general formula can be re-arranged as below:
 
 $$ h_t = f(x_t, x_{t-k}) + \cdots + f(x_t, x_{t-1})  + f(x_t, x_{t+1}) + \cdots + f(x_t, x_{t+ k})$$
 
-While relation network can be too big to consider all pairwise relationship of tokens, CNN can be too small to consider only local relationship between tokens. We need a compromise between them, which is **attention mechanism**.
+While relation network can be too big to consider all pairwise relationship of tokens, CNN can be too small to consider only local relationship between them. We need a compromise in between those two extreme, which is so called **attention mechanism**.
 
 ### Self-Attention
 
@@ -66,15 +66,15 @@ A general form given in the previous paragraph can be re-written in a more flexi
 $$h_t = \sum_{t' = 1}^T \alpha(x_t, x_{t'}) f(x_t, x_{t'})$$
 
 
-Here, $\alpha(\cdot,\cdot)$ controls the amount of effect that each pairwise combination of tokens may have. If a combination of tokens. For example, two tokens, 'I' and 'you', in the sentence 'I like you like this', may not contribute to the decision if the sentence if positive or negative. Contrarily, 'I' and 'like' combination gives us a clear idea about the sentiment of the sentence. In this case we pay little attention to the former and significant attention to the tlatter. By introducing the weight vector $\alpha$, we can let the algorithm to adjust the importance of the word combination.
+Here, $\alpha(\cdot,\cdot)$ controls the amount of effect that each pairwise combination of tokens may have. For example, two tokens, 'I' and 'you', in the sentence 'I like you like this', may not contribute to the decision on its sentiment. Contrarily, 'I' and 'like' combination gives us a clear idea about the sentiment of the sentence. In this case we pay little attention to the former and significant attention to the latter. By introducing the weight vector $\alpha(\cdot, \cdot)$, we can let the algorithm to adjust the importance of the word combination.
 
 ![sa_mechanism](/assets/sa_mechanism.png)
 
-Suppose that $T$ tokens in the $i$-th sentence are embedded in $H_{i1}, \ldots, H_{iT}$, each token embedding will be assigned to a weight $\alpha_{it}$, which represents relative importance when tokens are summarized into a single representation. To make it **relative**, the attention weights must satisfy 
+Supposing that $T$ tokens in the $i$-th sentence are embedded in $H_{i1}, \ldots, H_{iT}$, each token embedding will be assigned to a weight $\alpha_{it}$, which represents relative importance when tokens are summarized into a single representation. For this attention vector to address **relative** importance of word combinations, the attention weights must satisfy 
 
 $\sum_{t = 1} ^T \alpha_{i, t} = 1$
 
-and this property is achieved by insert soft-max layer as a node in the network.
+and this property is achieved by inserting soft-max layer as a node in the network.
 
 The final product we want to have at the end of the day is a weight matrix per input sentence. If we have 10 sentence feed into network, we will get 10 attention matrices that look like this.
 
@@ -83,7 +83,7 @@ The final product we want to have at the end of the day is a weight matrix per i
 
 ### Self-Attention implementation
 
-The self-attention mechanism was first proposed in the paper, [A structured Self-Attentive Sentence Embedding](https://arxiv.org/pdf/1703.03130.pdf), which applied self-attention mechanism to the hidden layer of bidirectional LSTM as is given below:
+The self-attention mechanism was first proposed in the paper, [A structured Self-Attentive Sentence Embedding](https://arxiv.org/pdf/1703.03130.pdf), which applied self-attention mechanism to the hidden layer of bidirectional LSTM as shown in the following figure.
 
 ![Structured Self-Attentive Sentence Embedding](/assets/structured_sa_sentence_embedding_fig1.png)
 
@@ -93,12 +93,12 @@ Different from Self-attention mechanism from the original paper (given in the ab
 
 ![sa_rel_net](/assets/sa_rel_net_l15itcw5z.png)
 
-Let's assume that we want to get a representation for the $i$-th token. For each combination of tokens with the $i$-th token, there are two outputs are produced: one of them is used for feature extraction (green circle) and the other is used for attention weight(red circle). Those two outputs may share the network, but in this article, we use separate network for each output. The output for the attnetion (red circle) runs through sigmoid and softmax layer before we get the final attention weights. These attention weights are multiplied to the extracted features to get the representation for a token of interest.
+To explain the above diagram, let's assume that we want to get a representation for the $i$-th token. For combinations of tokens with the $i$-th token, there are two outputs are produced: one of them is used for feature extraction (green circle) and the other is used for attention weight(red circle). Those two outputs may share the network, but in this article, we use separate network for each output. The output for the attnetion (red circle) runs through sigmoid and softmax layer before we get the final attention weights. These attention weights are multiplied to the extracted features to get the representation for a token of interest.
 
 ### Self-Attention with Gluon
 
 
-For the implementation, we assume very simple network with two fully connected dense layers for relation extractor and one dense layer for attention. We also used another two fully connected dense layeyrs for the classifier after sentence representation. Here, relation extractor and attention extractor is given below. 
+For the implementation, we assume very simple network with two fully connected dense layers for relation extractor and one dense layer for attention, which is followed by another two fully connected dense layeyrs for the classifier. Here, relation extractor and attention extractor is given the following code snippet. 
 
 ~~~
 class Sentence_Representation(nn.Block):
@@ -144,7 +144,7 @@ class Sentence_Representation(nn.Block):
         return sentence_rep, att
 ~~~
 
-We have separate networks for feature extraction and attention. The resulting attention vector is of size $T\times 1$ and the resulting feature extraction is of size $T\times d$, where $d$ is a sort of hyper parameter. To multiply those two, we simply inflate attention vector to match the size of feature extraction. It's just a trick and other implementations could be better.
+We have separate networks for feature extraction and attention. The resulting attention vector is of size $T\times 1$ and the resulting feature extraction is of size $T\times d$, where $d$ is a sort of hyper parameter. To multiply those two, we simply inflate attention vector to match the size of feature extraction. It's just a trick and other implementations could be better. The entire implementation can be found [here](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_RN_SA_umich.ipynb)
 
 # Result
 
@@ -153,9 +153,4 @@ Here is attention matrix for 9 randomly selected attention matrices.
 
 ![sa_rn_result](/assets/sa_rn_result.png) 
 
-We can understand what tokens the algorithm pay attention to when it classifies the text. As is expected, sentiment words such as 'love', 'awesome', 'stupid', 'suck' got some spotlight during classification process.
-
-# Reference
-
-* Multi width convolutional layers [Kim, 2014; Lee et al., 2017]
-* Dilated Convolutioal layers [
+We can understand what tokens the algorithm pay attention to when it classifies the text. As is expected, sentiment words such as 'love', 'awesome', 'stupid', 'suck' got some spotlight during classification process. 
