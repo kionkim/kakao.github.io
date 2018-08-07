@@ -11,7 +11,7 @@ tags: [opensource,s2graph,mrte,hbase-tools,hbase-region-inspector,adt,daum-edito
 
 ## Natural Language Process
 
-### 5 ways of sentence representation
+### Sentiment Analysis
 
 * [Text Classification - BoW](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CBOW_representation.ipynb)
 
@@ -19,11 +19,24 @@ tags: [opensource,s2graph,mrte,hbase-tools,hbase-region-inspector,adt,daum-edito
 
 * [Text Classification - CNN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CNN_representation.ipynb)
 
-* [Text Classification - Self Attention](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_SA_representation.ipynb)
+* [Text Classification - Self Attention](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_RNN_SA_umich.ipynb)
+
+* [Text Classification - Self Attention with Relation Network](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_RN_SA_umich.ipynb)
+
+
+### Neural Machine Translation
 
 
 ## Generative Models
 
 * [Variational Autoencoder](http://210.121.159.217:9090/kionkim/kyungbpook-lecture/blob/master/notebooks/VAE_using_MLP.ipynb)
 
-* [DCGAN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/GAN/notebooks/DCGAN.ipynb)
+* [Vanilla GAN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/GAN/notebooks/GAN.ipynb)
+
+
+* [DCGAN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/GAN/notebooks/DCGAN_fashion_mnist.ipynb)
+
+* [WGAN](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/GAN/notebooks/WGAN_mnist.ipynb)
+
+
+### Meta Learning
