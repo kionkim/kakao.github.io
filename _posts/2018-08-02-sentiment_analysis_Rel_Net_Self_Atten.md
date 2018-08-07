@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Sentence representation - Self attention'
+title: 'Sentiment Analysis - Self attention based on Relation Network'
 author: kion.kim
 date: 2018-08-02 17:00
 tags: [deeplearning, self-attention, nlp, sentence representation]
