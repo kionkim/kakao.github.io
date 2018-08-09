@@ -11,7 +11,7 @@ There are many methods for sentence representation. We have discussed 5 differen
 
 # What we have discussed so far...
 
-Just averaging token embeddings in sentence works pretty well on text classification problem. Text classification problem, which is relatively easy and simplet take, does not need to understand the meaning of the sentence in semantic way but it suffices to count the word. For example, for sentiment analysis, the algorithm needs to count word that has siginificant relationship with positive or negative sentiments regardless of its position and meaning. Of course the algorithm should be able to learn the sentiment of word itself. 
+Just averaging token embeddings in sentence works pretty well on text classification problem. Text classification problem, which is relatively easy and simple task, does not need to understand the meaning of the sentence in semantic way but it suffices to count the word. For example, for sentiment analysis, the algorithm needs to count word that has siginificant relationship with positive or negative sentiments regardless of its position and meaning. Of course the algorithm should be able to learn the sentiment of word itself. 
 
 
 ### RNN
