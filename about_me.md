@@ -78,7 +78,6 @@ Education
 ---------
 
 2005-2010
-
 :   **PhD, 통계학**; The Pennsylvania State University (University Park, PA, USA)
     *Dissertation title: Functional Data Analysis and its application to sparse longitudinal data*
 
