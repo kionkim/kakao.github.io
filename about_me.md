@@ -19,19 +19,17 @@ tags: [about_me]
 현재 machine learning 및  deep learning을 현업에 원활히 적용하기 위한 machine learning platform을 개발하고 있습니다.
 
 * AutoML 개발
-  - 분석가 외에 현업 담당자들도 deep leanring을 분석에 활용할 수 있도록 노력하고 있습니다.
+  - 분석가 외에 현업 담당자들도 deep leanring을 분석에 활용할 수 있도록 노력하고 있습니다. 현업 담당자 향 서비스를 지향합니다.
   - Keras를 사용해서 Genetic Algorithm을 바탕으로 한 NAS 및 mxnet을 활용, Relation Network를 통해 AutoML을 구현하였습니다.
 
-* Hyperparameter optimization
-  - 산학 과제를 통해 HPO와 NAS에 대해서 공부하고 있습니다.
 
 * Deep learning 관련 기술 sensing
-  - 최근에는 VAE와 GAN 등 generative model에 관심을 가지고 공부하고 있습니다.
+  - 팀 동료들과 함께 structural data를 embedding하여 업무에 훌륭하게 적용하고 있습니다.
+  - VAE와 GAN 등 generative model에 관심을 가지고 공부하고 있습니다.
   - 자연어 처리에 대해서도 관심이 많고 업무에 어떻게 적용할지 고민하고 있습니다. 
   - Relation network와 Attention mechanism이 여러분야에서 유용하게 사용되고 있어 여러가지 구현체를 만들어 가고 있습니다.
-  - meta learning 및 few shot learning 논문을 읽고 이해하고 있습니다.
-  - 팀 동료들과 함께 structural data를 embedding하여 업무에 훌륭하게 적용하고 있습니다.
-
+  - 최근에는 Few-shot learning을 공부하고 있습니다.
+  - Blog를 통해 최근에 습득한 내용들 위주로 정리하고 있습니다. 앞으로는 통계적인 내용부터 ML/DL을 아우르는 post를 작성하는 것이 목표입니다. [다음](kion.kim@github.io)을 참고하세요.
 
 #### Data Insight team, Data Science Center, SK 텔레콤
 
