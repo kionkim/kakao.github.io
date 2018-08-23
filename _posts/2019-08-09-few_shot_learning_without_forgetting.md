@@ -39,7 +39,7 @@ $$ D_{novel} = \bigcup_{n=1}^{K_{novel} } \left\{ x'_{n,i} \right\}_{i=1}^{N'_n}
 
 분류 작업은 CNN 기반의 신경망을 통해 이루어집니다. $K_{base}$개의 범주를 label로 두고 back prop으로 학습하는 일반적인 신경망과 다를 것이 없지만 1가지 다른 점은, 마지막 layer가 cosine similarity로 이루어진다는 점입니다. 만약 5개의 layer가 있으면 이 논문에서는 앞의 4개 layer를 **feature extractor**라고 부르고, 마지막 1개 layer를 **classifier**라고 부릅니다. 일반적으로도 그렇게  부르기는 하지만, 보다 명확한 이해를 위해 이를 다시 한번 강조했다고 볼 수 있습니다.
 
-Feature extractor는 모수, $\theta$,를 가지는 신경망, $F(\cdot \vert \theta)$,로 표현합니다. Classifier는 $K_{base}$ 개의 base class에 대한 weight, $W_k^{*}$,을 모두 포함하는 모수 집합, $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$,을 전체 모수로 가지는 $C(\cdot \vert  W^*)$로 표현을 합니다. Classifier는 결국 $K^*$개의 classification vector로 이루어져 있고, 이 classification vector가 각 base class에 대한 정보를 압축하고 있다고 간주합니다. 이 classifier를 통과 하면 $K^*$의 길이를 가지는 score값 vector, $p = C(z\vert W^*)$를 최종적으로 얻습니다.
+Feature extractor는 모수, $\theta$,를 가지는 신경망, $F(\cdot \vert \theta)$,로 표현합니다. Classifier는 $K_{base}$ 개의 base class에 대한 weight, $W_k^{ * }$,을 모두 포함하는 모수 집합, $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$,을 전체 모수로 가지는 $C(\cdot \vert  W^*)$로 표현을 합니다. Classifier는 결국 $K^*$개의 classification vector로 이루어져 있고, 이 classification vector가 각 base class에 대한 정보를 압축하고 있다고 간주합니다. 이 classifier를 통과 하면 $K^*$의 길이를 가지는 score값 vector, $p = C(z\vert W^*)$를 최종적으로 얻습니다.
 
 Base category와 novel category는 feature extractor를 공유합니다. 이렇게 공유된 feature extractor를 통과한 결과를 비교해서 비슷한 class의 weight vector를 새로운 데이터로 업데이트 해서 novel category의 classifier로 사용합니다.
 
