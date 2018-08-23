@@ -21,9 +21,8 @@ Few shot learning은 이러한 문제를 해결하기에 아주 적합한 모형
 
 간단하게 요약해서 알고리즘을 설명하자면, 신경망의 weight들이 각 class별의 특성을 보유하고 있고, 따라서, 새로운 범주(novel category)로 분류해야 할 때, 몇개의 sample의 feature map을 활용하여, 새로운 범주로 분류하기 위한 신경망을 구축한다는 것입니다. 새로운 category의 weight값을 구하는 방법은 가장 쉽게는 feature map 값들의 평균의 함수로 구할 수도 있지만, 이 논문에서는 attention mechanism을 사용하는 것을 제안하고 있습니다. (Few-shot classification-weight generator based on attention). 이러한 과정은 이전의 경험으로부터 학습하는 인간의 학습과정과 닮아 있다고 합니다만, 이렇게 weight를 직접 조정하는 방법이 전혀 다른 domain의 분류 문제들에서는 어떤 성능을 발휘할지 잘 모르겠기는 합니다. 아마도 새로운 문제에 적용하기 보다는 이미 존재하는 문제를 보다 많은 category의 분류 문제로 확장하는 데에 도움이 되는 방법인 것 같습니다.
 
-## Cosine-similarity based ConvNet recognition model
 
-결국 새로운 weight를 update해서 새로운 범주를 분류할 수 있는 weight를 구한 다음, 이들을 모두 하나의 신경망으로 간주하고 기본 범주와 새로운 범주를 하나의 문제로 놓고 분류 문제를 풀게 됩니다. 이 때 각각 다른 경로를 통해서 얻은 weight는 서로 다른 scale을 가지고 있을 수가 있는데 이를 scale에 구애받지 않고 합치기 위해서 신경망의 마지막 layer를 단순 weight과의 내적이 아니라 **cosine similarity**를 구해서 분류하게 됩니다.
+결국 새로운 weight를 update해서 새로운 범주를 분류할 수 있는 weight를 구한 다음, 이들을 모두 하나의 신경망으로 간주하고 기본 범주와 새로운 범주를 하나의 문제로 놓고 분류 문제를 풀겠다는 것입니다. 이 때 각각 다른 경로를 통해서 얻은 weight는 서로 다른 scale을 가지고 있을 수가 있는데 이를 scale에 구애받지 않고 합치기 위해서 신경망의 마지막 layer를 단순 weight과의 내적이 아니라 **cosine similarity**를 구해서 분류하게 됩니다.
 
 # Methodology
 
@@ -40,13 +39,13 @@ $$ D_{novel} = \bigcup_{n=1}^{K_{novel} } \left\{ x'_{n,i} \right\}_{i=1}^{N'_n}
 
 분류 작업은 CNN 기반의 신경망을 통해 이루어집니다. $K_{base}$개의 범주를 label로 두고 back prop으로 학습하는 일반적인 신경망과 다를 것이 없지만 1가지 다른 점은, 마지막 layer가 cosine similarity로 이루어진다는 점입니다. 만약 5개의 layer가 있으면 이 논문에서는 앞의 4개 layer를 **feature extractor**라고 부르고, 마지막 1개 layer를 **classifier**라고 부릅니다. 일반적으로도 그렇게  부르기는 하지만, 보다 명확한 이해를 위해 이를 다시 한번 강조했다고 볼 수 있습니다.
 
-Feature extractor는 모수, $\theta$,를 가지는 신경망, $F(\cdot | \theta)$,로 표현합니다. Classifier는 $K_{base}$ 개의 base class에 대한 weight, $W_k^*$,을 모두 포함하는 모수 집합, $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$,을 전체 모수로 가지는 $C(\cdot | W^*)$로 표현을 합니다. Classifier는 결국 $K^*$개의 classification vector로 이루어져 있고, 이 classification vector가 각 base class에 대한 정보를 압축하고 있다고 간주합니다. 이 classifier를 통과 하면 $K^*$의 길이를 가지는 score값 vector, $p = C(z|W^*)$를 최종적으로 얻습니다.
+Feature extractor는 모수, $\theta$,를 가지는 신경망, $F(\cdot \vert \theta)$,로 표현합니다. Classifier는 $K_{base}$ 개의 base class에 대한 weight, $W_k^*$,을 모두 포함하는 모수 집합, $W^* = \{ w_k^* \in \mathbb R^d \}_{k= 1}^{K^*}$,을 전체 모수로 가지는 $C(\cdot \vert  W^*)$로 표현을 합니다. Classifier는 결국 $K^*$개의 classification vector로 이루어져 있고, 이 classification vector가 각 base class에 대한 정보를 압축하고 있다고 간주합니다. 이 classifier를 통과 하면 $K^*$의 길이를 가지는 score값 vector, $p = C(z\vert W^*)$를 최종적으로 얻습니다.
 
 Base category와 novel category는 feature extractor를 공유합니다. 이렇게 공유된 feature extractor를 통과한 결과를 비교해서 비슷한 class의 weight vector를 새로운 데이터로 업데이트 해서 novel category의 classifier로 사용합니다.
 
 단일 training에서는 base category를 잘 분류하는 classifier를 찾는 것, 다시 말하면 최적화된 모수집합 $W^*$를 찾는 데 주력합니다.
 
-위에서 언급한 것과 같이 이 논문에서 사용된 classifier는 기존의 classifier와는 달리 cosine similarity를 가집니다. 데이터가 이미 feature extractor를 통과해서 $z$라는 feature extract(혹은 일반적으로는 feature map)을 얻었다고 하면, 일반적으로는 $p=C(z|W^*)$를 구하기 위해서 먼저 score $s_k, k =1 , \ldots, K_{base}$를 구하고 이들 score를 softmax layer를 통과시켜 각 category에 대한 최종 확률을 얻습니다. 1차 학습이 아니라 신규 범주가 포함되어 있는 2차 학습의 경우 weight vector를 구하는 방법은 base category와 novel category에 따라 크게 다릅니다. base category에 대한 weight들은 아주 많은 데이터로 서서히 학습이 된 안정적인 weight라면 weight generator를 통해 학습된 novel category의 weight값은 아주 작은 data로 학습이 되는만큼 안정성이 떨어지는 weight일 것입니다. 그러므로 만약 classifier에서 weight vector와 feature vector, $z$를 그냥 곱한후에 softmax를 취하게 되면 하나의 category에 몰리는 현상이 발생할 수도 있습니다. 이런 경우를 대비해서, 이 논문에서는 weight과 feature extract를 모두 normalize한 후에 내적을 취함으로써 cosine similarity를 구하는 것과 같은 연산을 진행합니다.
+위에서 언급한 것과 같이 이 논문에서 사용된 classifier는 기존의 classifier와는 달리 cosine similarity를 가집니다. 데이터가 이미 feature extractor를 통과해서 $z$라는 feature extract(혹은 일반적으로는 feature map)을 얻었다고 하면, 일반적으로는 $p=C(z\vert W^*)$를 구하기 위해서 먼저 score $s_k, k =1 , \ldots, K_{base}$를 구하고 이들 score를 softmax layer를 통과시켜 각 category에 대한 최종 확률을 얻습니다. 1차 학습이 아니라 신규 범주가 포함되어 있는 2차 학습의 경우 weight vector를 구하는 방법은 base category와 novel category에 따라 크게 다릅니다. base category에 대한 weight들은 아주 많은 데이터로 서서히 학습이 된 안정적인 weight라면 weight generator를 통해 학습된 novel category의 weight값은 아주 작은 data로 학습이 되는만큼 안정성이 떨어지는 weight일 것입니다. 그러므로 만약 classifier에서 weight vector와 feature vector, $z$를 그냥 곱한후에 softmax를 취하게 되면 하나의 category에 몰리는 현상이 발생할 수도 있습니다. 이런 경우를 대비해서, 이 논문에서는 weight과 feature extract를 모두 normalize한 후에 내적을 취함으로써 cosine similarity를 구하는 것과 같은 연산을 진행합니다.
 
 이렇게 함으로써 서로 다른 pipeline으로부터 얻은 weight vector의 scale에 영향을 받지 않고 분류를 진행할 수 있습니다. 이 부분이 이 논문의 가장 큰 contribution 중의 하나라고 저자들은 이야기 합니다.
 
@@ -66,17 +65,17 @@ Weight의 scale에 구애받지 않고, 분류 작업을 할 수 있다는 장�
 
 ## Few-shot classification weight generator
 
-1차로 학습된 결과를 바탕으로 새로운 범주에 대한 weight를 구하게 되는데, 이 과정에서, base category의 특성을 활용합니다. 새롭게 추가되는  $K_{novel}$개의 novel category에 대해 각각 $\phi$를 모수로 하는 classification weight generator, $G(.,.|\phi)$,가 있습니다. 만약 $n$ 번째 novel category의 $i$번째 데이터, $x'_{n, i}$,가 feature extractor에 들어가면 $z'_{n,i}$를 얻습니다.  다시 말하면, 다음과 같습니다.
+1차로 학습된 결과를 바탕으로 새로운 범주에 대한 weight를 구하게 되는데, 이 과정에서, base category의 특성을 활용합니다. 새롭게 추가되는  $K_{novel}$개의 novel category에 대해 각각 $\phi$를 모수로 하는 classification weight generator, $G(.,.\vert \phi)$,가 있습니다. 만약 $n$ 번째 novel category의 $i$번째 데이터, $x'_{n, i}$,가 feature extractor에 들어가면 $z'_{n,i}$를 얻습니다.  다시 말하면, 다음과 같습니다.
 
-$$z'_{n, i} = F(x'_{n,i} | \theta)$$
+$$z'_{n, i} = F(x'_{n,i} \vert  \theta)$$
 
-이 $z'_{n,i}$와 함께 base category의 weight값을 input으로 사용하여 $G(.,.|\phi)$는 새로운 범주의 weight vector를 update합니다. 이런 과정을 새로운 범주 전체에 대해서 반복하고, 다음과 같은 새로운 범주에 대한 weight vector의 집합을 얻게 되는 것입니다.
+이 $z'_{n,i}$와 함께 base category의 weight값을 input으로 사용하여 $G(.,.\vert \phi)$는 새로운 범주의 weight vector를 update합니다. 이런 과정을 새로운 범주 전체에 대해서 반복하고, 다음과 같은 새로운 범주에 대한 weight vector의 집합을 얻게 되는 것입니다.
 
-$$W_{novel} = \{ w'_n\}_{n=1}^{K_{novel}}, \textrm{ where, } w'_n = G(Z'_n, W_{base}|\phi)$$
+$$W_{novel} = \{ w'_n\}_{n=1}^{K_{novel}}, \textrm{ where, } w'_n = G(Z'_n, W_{base}\vert \phi)$$
 
 결국 우리는 base category와 함께 novel category에 대해 분류를 할 수 있는 weight 집합을 얻었습니다.
 
-$$C(\cdot | W^*), W^* = W_{base} \bigcup W_{novel}$$
+$$C(\cdot \vert  W^*), W^* = W_{base} \bigcup W_{novel}$$
 
 이미 학습되어 있는 base classifier의 weight를 모두 가지고 있을 것이므로 기존 범주에 대한 정확도의 훼손 없이 새로운 범주를 분류해 낼 수 있게 된다고 합니다.
 
@@ -112,7 +111,7 @@ $$w' = \phi_{avg} \odot w'_{avg} + \phi_{att} \odot w'_{att}$$
 
 ### Train ConvNet
 
-ConvNet을 학습시킨다고 하는 것은 $F(\cdot| \theta)$와 $C(\cdot | W^*)$를 학습시킨다는 것을 의미합니다. ConvNet과 few-shot classification weight generator $G(\cdot, \cdot | \phi)$를 학습시키기 위해 먼저 base category만으로 학습을 진행합니다. 이 단계는 두 단계로 이루어집니다. 각각의 단계에서 다음의 cross entrophy loss를 최소화합니다.
+ConvNet을 학습시킨다고 하는 것은 $F(\cdot\vert  \theta)$와 $C(\cdot \vert  W^*)$를 학습시킨다는 것을 의미합니다. ConvNet과 few-shot classification weight generator $G(\cdot, \cdot \vert  \phi)$를 학습시키기 위해 먼저 base category만으로 학습을 진행합니다. 이 단계는 두 단계로 이루어집니다. 각각의 단계에서 다음의 cross entrophy loss를 최소화합니다.
 
 $$\frac 1 {K_{base}}\sum_{b=1}^{K_{base}} \frac 1 {N_b} \sum_{i=1}^{N_b} loss (x_{b,i}, b)$$
 
