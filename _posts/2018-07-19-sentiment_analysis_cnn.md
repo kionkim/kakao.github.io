@@ -47,7 +47,7 @@ Before dive into detail of gluon implementation, let's consider dimensionality o
 
 For this, if we set the width of kernel as embedding size, then there is no room for 2D convolution layer to convolve with the data more than 1 time and the kernels are applied only in the direction of words.
 
-Here is the way how convolution layers defined. Only relavant part of the code is displayed below and the working code is given [gluon implementation](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CNN_lfw.ipynb)
+Here is the way how convolution layers defined. Only relavant part of the code is displayed below and the working code is given [gluon implementation](http://210.121.159.217:9090/kionkim/stat-analysis/blob/master/nlp_models/notebooks/text_classification_CNN_umich.ipynb)
 
 ```
 class Sentence_Representation(nn.Block):
