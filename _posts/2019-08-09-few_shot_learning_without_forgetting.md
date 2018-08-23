@@ -2,8 +2,8 @@
 layout: post
 title: 'Dynamic Few-Shot Visual Learning without Forgetting'
 author: kion.kim
-date: 2018-07-26 17:00
-tags: [deeplearning, nlp, attention, skip connection, NMT]
+date: 2018-08-09 17:00
+tags: [deeplearning, Few-shot learning, attention, cosine similarity]
 ---
 
 # 시작하며
